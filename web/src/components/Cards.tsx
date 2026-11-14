@@ -113,10 +113,10 @@ export function TrustCard({ card, onAction, busy }: { card: Card; onAction: OnAc
       <div className="text-[15px] font-semibold leading-snug">{card.title}</div>
       <div className="flex items-baseline gap-2 mt-1">
         <span className="text-[34px] font-bold tracking-tight text-trust num leading-tight">{inr(card.amount_paise)}</span>
-        <span className="text-[13px] text-ink-3">starter credit</span>
+        <span className="text-[13px] text-ink-3">udhaar limit</span>
       </div>
       <p className="text-[14px] text-ink-2 leading-relaxed mt-1">{card.body}</p>
-      {card.note && <div className="mt-2 flex gap-1.5 text-[12px] text-ink-3"><Info size={14} className="shrink-0 mt-px" />{card.note}</div>}
+      {card.note && <div className="mt-2 text-[12.5px] font-medium text-money">{card.note}</div>}
       <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
         {yes && <button disabled={busy} className="btn btn-lg btn-navy" onClick={() => onAction(card, { action: "offer_yes" })}><Check size={18} strokeWidth={2.5} />{yes.label}</button>}
         {no && <button disabled={busy} className="btn btn-lg btn-ghost px-5" onClick={() => onAction(card, { action: "offer_no" })}>{no.label}</button>}

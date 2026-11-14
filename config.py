@@ -119,6 +119,8 @@ JUDGE_BLOCKLIST = [
     "caste", "religion", "hindu", "muslim", "christian", "sikh", "jain", "dalit", "brahmin",
     "tribal", "gender", "pregnant", "disabled", "lazy", "cheat", "fraud", "thief", "chor",
     "untrustworthy", "liar", "poor", "illiterate", "beggar",
+    # compliance wording: PakkaKhata records the shop's own udhaar; it never lends or offers credit
+    "loan", "loans", "lend", "lends", "lending", "lender", "credit line", "offer credit",
 ]
 
 # ---------------------------------------------------------------- API security

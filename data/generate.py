@@ -397,6 +397,16 @@ def make_demo_db(path: Path = config.DB_PATH, seed: int = config.SEED) -> dict:
     ledger.add_udhaar(conn, S2, c2, 120_000, given_at=_ts(11))
     conn.commit()
 
+    # ---------------- DPDP consent (synthetic): has this customer agreed to share their payment record with THIS shop?
+    # Separate RNG so the rest of the seeded demo data is unchanged. Lakshmi has agreed.
+    crng = np.random.default_rng(seed + 99)
+    for shop_id in (S, S2):
+        for (v,) in conn.execute("SELECT DISTINCT payer_vpa FROM payments WHERE shop_id=? AND payer_vpa<>'' ORDER BY payer_vpa", (shop_id,)).fetchall():
+            ok = 1 if v == "9912345678@ybl" else int(crng.random() < 0.6)
+            conn.execute("INSERT OR REPLACE INTO consents(shop_id, payer_vpa, consent, recorded_at) VALUES (?,?,?,?)",
+                         (shop_id, v, ok, _ts(30)))
+    conn.commit()
+
     total_open = ledger.open_total(conn, S)
     summary = {"shop": S, "open_total_paise": total_open, "open_customers": len(ledger.customers_with_open_udhaar(conn, S)),
                "payments": conn.execute("SELECT COUNT(*) FROM payments WHERE shop_id=?", (S,)).fetchone()[0],

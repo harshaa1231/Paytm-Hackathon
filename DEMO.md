@@ -12,7 +12,7 @@ them from the screen.
 ## 90 seconds
 1. **Shopkeeper.** Press **Simulate next payment** (Ramesh, ₹450 on PhonePe). The card says *"Ramesh dudh wala paid ₹450. On PhonePe. Clear the ₹450 udhaar?"* Tap **Clear ₹450**. Total owed drops from **₹38,450 to ₹38,000**. Mention the Undo.
 2. **Under the hood** (10 s). Click "Under the hood" under the event. Point at the bank name **RAMESH K** vs the khata name **Ramesh dudh wala**. There are two Rameshes, both scoring 105, so the case is ambiguous and goes to the LLM (offline it falls back to rules, which use the exact ₹450 amount). Show the judge's two checks and the LangGraph strip: it paused at `ask_shopkeeper`, then resumed.
-3. **Back to Shopkeeper: the Lakshmi card.** *"Lakshmi N paid you 26 times in the last 6 months and has no udhaar on record. Visits on a steady schedule and never away more than 9 days. Offer ₹100 starter credit?"* Tap **Yes, offer ₹100**. It's recorded at ladder step 1, and the customer would get an SMS to accept.
+3. **Back to Shopkeeper: the Lakshmi card.** *"Lakshmi N paid you 26 times in the last 6 months and has no udhaar on record. Visits on a steady schedule and never away more than 9 days. Allow Lakshmi N udhaar up to ₹100?"* with *"✓ Agreed to share their payment record with this shop"*. Tap **Yes, allow ₹100**. It's recorded at ladder step 1 as a khata entry; nothing is sent to the customer.
 4. **Forecast card.** *"About ₹20,300 of the ₹38,000 udhaar should come back in the next 7 days (likely ₹11,500 to ₹28,300)."*
 5. **Proof.** Bias chart, one sentence: *"Among equally reliable customers the shopkeeper's own choices favour his in-group by 11 points; our repayment-trained model's gap is zero. A model trained on his yes/no copies his bias as soon as behaviour hints at the group: up to 14 points in the sweep."* Then the **Learning loop** chart. Done.
 
@@ -28,7 +28,7 @@ Optional extras if asked: the remaining queue items show Sunita/Suneeta (partial
 ## Judge Q&A (short answers)
 - **What's new?** Other apps record who owes money. We decide who to trust next, start small, and learn only from repayments, so we don't copy the shopkeeper's bias. Show the bias chart.
 - **What if Lakshmi doesn't pay?** The first offer is ₹100. It grows only after 3 on-time repayments; late steps it down; unpaid at 30 days freezes it. The shopkeeper decides every time. In the study, random borrowers at up to ₹100 were no riskier.
-- **Isn't this lending? RBI?** No money moves through Paytm. It's the shop's own udhaar, which they already give. We only suggest. Paytm Postpaid would be a separate, opt-in, regulated product later.
+- **Is this a credit product? RBI?** No money moves through Paytm, and no payment or collect request is ever sent. It's the shop's own udhaar, which they already give. We only suggest. Paytm Postpaid would be a separate, opt-in, regulated product later.
 - **Beyond 26 Mumbai shops?** We don't know yet. That's why the ask is a pilot: switch it on for some shops, compare with similar shops, and measure on-time repayment, returning customers, bad debt and opt-outs.
 - **Your data is synthetic.** Yes, shaped on the study's published findings. Separately, each method was checked on real public data. Real Paytm QR data is the pilot.
 - **Why an LLM? Why LangGraph?** Fuzzy rules fail on nicknames vs bank names. The LLM handles only the ambiguous ones, using that shop's own past matches as examples. LangGraph because the workflow has to stop for a human tap and resume exactly where it left off.

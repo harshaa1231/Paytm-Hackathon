@@ -39,8 +39,17 @@ def _excluded_vpas(conn: sqlite3.Connection, shop_id: str, as_of: str) -> set[st
     return ex
 
 
+def consented_vpas(conn: sqlite3.Connection, shop_id: str) -> set[str]:
+    """DPDP: payers who agreed to share their payment record with THIS shop."""
+    return {r[0] for r in conn.execute("SELECT payer_vpa FROM consents WHERE shop_id=? AND consent=1", (shop_id,))}
+
+
 def scored_payers(conn: sqlite3.Connection, shop_id: str, as_of: str) -> pd.DataFrame:
+    """Scores ONLY this shop's own payments, ONLY for payers who consented. Nothing is pooled across shops."""
     pay = shop_payments_df(conn, shop_id)
+    pay = pay[pay["payer_key"].isin(consented_vpas(conn, shop_id))]
+    if pay.empty:
+        return pd.DataFrame()
     if pay.empty:
         return pd.DataFrame()
     cut = to_cutoff(pd.Timestamp(as_of))
@@ -72,7 +81,7 @@ def hidden_regulars(conn: sqlite3.Connection, shop_id: str, as_of: str, top_k: i
     for (vpa, row), rs in zip(picked.iterrows(), reasons):
         months = max(1, int(round(row["tenure_days"] / 30)))
         items.append({"payer_ref": payer_ref(shop_id, vpa), "payer_vpa": vpa, "display_name": row["display_name"],
-                      "score": round(float(row["score"]), 3), "n_total": int(row["n_total"]), "n_pay_90d": int(row["n_pay_90d"]),
+                      "score": round(float(row["score"]), 3), "consent": True, "n_total": int(row["n_total"]), "n_pay_90d": int(row["n_pay_90d"]),
                       "months": months, "reasons": rs, "features": {f: (None if pd.isna(row[f]) else round(float(row[f]), 2)) for f in FEATURES}})
     return {"status": "ok", "items": items, "threshold": thr,
             "eligible_by_rule": int(len(elig)), "below_threshold": int((near["score"] < thr).sum()),

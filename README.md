@@ -8,7 +8,7 @@ the shopkeeper three cards. It never acts on its own: it suggests, and the shopk
 | Card | What the shopkeeper sees |
 |---|---|
 | **Who paid you** | "Ramesh dudh wala paid ₹450. On PhonePe. Clear the ₹450 udhaar?" [Clear ₹450] [Just a purchase] [Not this customer] |
-| **Who to trust** | "Lakshmi N paid you 26 times in the last 6 months and has no udhaar on record. Visits on a steady schedule and never away more than 9 days. Offer ₹100 starter credit?" [Yes] [No] |
+| **Who to trust** | "Lakshmi N paid you 26 times in the last 6 months and has no udhaar on record. Visits on a steady schedule and never away more than 9 days. Allow Lakshmi N udhaar up to ₹100?" ✓ Agreed to share their payment record with this shop. [Yes, allow ₹100] [No] |
 | **What's coming back** | "About ₹20,300 of the ₹38,000 udhaar should come back in the next 7 days (likely ₹11,500 to ₹28,300)." |
 
 Built for the Paytm Build for India AI Hackathon (Track 1, Merchant Growth AI).
@@ -88,7 +88,7 @@ flowchart LR
 | Name matching (Ramesh dudh wala ↔ RAMESH K), in-context learning from the shop's confirmed matches | `core/normalize.py`, `core/matcher.py` |
 | Human-in-the-loop: LangGraph `interrupt()` / `Command(resume=…)` | `core/graph.py` |
 | Hidden regulars: LightGBM trust score + plain-word reasons from `pred_contrib` | `core/features.py`, `core/trust_model.py`, `core/recommend.py` |
-| Starter credit ladder ₹100 → ₹200 → ₹400 → ₹700 → ₹1,000 (our design) | `core/ladder.py` |
+| Udhaar limit ladder ₹100 → ₹200 → ₹400 → ₹700 → ₹1,000 (our design) | `core/ladder.py` |
 | Repayment range: p7 model + seeded Monte Carlo with a shared weekly shock | `core/forecast.py` |
 | LLM-as-judge: stage 1 deterministic, stage 2 LLM | `core/judge.py` |
 | One LLM gateway: Groq → Gemini → rules, record/replay cache | `core/llm.py` |
@@ -148,7 +148,7 @@ Licences and SHA-256 checksums are in `reports/dataset_manifest.json`. Raw files
 - **The forecast range is conservative** (96% coverage for an 80% range).
 - **The deck's ₹24,000 forecast story became ₹20,300.** The app's real number wins.
 - **Hindi/Telugu**: only strings checked by a native speaker ship. Drafts in `app/i18n_drafts_unreviewed.json` are never loaded.
-- **Production would change:** Paytm merchant login instead of `X-Shop-Key`; Postgres and a persistent LangGraph checkpointer instead of SQLite/InMemorySaver; mapping to Paytm's internal event schema (a pilot task; we don't claim to know it); real consent SMS; `DEMO_ROUTES=false`.
+- **Production would change:** Paytm merchant login instead of `X-Shop-Key`; Postgres and a persistent LangGraph checkpointer instead of SQLite/InMemorySaver; mapping to Paytm's internal event schema (a pilot task; we don't claim to know it); consent captured in the Paytm app's own flow (PakkaKhata never messages customers); `DEMO_ROUTES=false`.
 
 ## Security
 

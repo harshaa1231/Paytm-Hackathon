@@ -1,4 +1,4 @@
-"""Starter credit ladder (plan P2 step 4). OUR design choice, not from the study; say so if asked.
+"""Udhaar limit ladder (plan P2 step 4). OUR design choice, not from the study; say so if asked.
 
 Steps: Rs100 -> Rs200 -> Rs400 -> Rs700 -> Rs1,000 cap.
 - up one step after 3 on-time repayments in a row at the current step

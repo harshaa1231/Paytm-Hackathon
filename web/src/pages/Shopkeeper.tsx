@@ -65,7 +65,7 @@ export default function Shopkeeper({ cfg, shop, setShop, lang, setLang }:
       else setToast({ kind: "info", text: "Already decided." });
     } else if (r.status === "done") {
       setToast({ kind: "ok", text: r.action === "offer_yes" ? fmt(L.toast_offer, { amount: inr(r.amount_paise), name: r.name })
-        : `Okay, no offer for ${r.name}. We won't suggest them again for 30 days.` });
+        : `Okay, not now for ${r.name}. We won't suggest them again for 30 days.` });
     }
     await refresh();
   });

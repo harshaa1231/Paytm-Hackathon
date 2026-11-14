@@ -45,6 +45,9 @@ CREATE TABLE IF NOT EXISTS cards(
   card_id TEXT PRIMARY KEY, shop_id TEXT NOT NULL, txn_id TEXT, type TEXT NOT NULL,
   payload_json TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
   created_at TEXT, decided_at TEXT, decision_json TEXT);
+CREATE TABLE IF NOT EXISTS consents(
+  shop_id TEXT NOT NULL, payer_vpa TEXT NOT NULL, consent INTEGER NOT NULL CHECK(consent IN (0,1)), recorded_at TEXT,
+  PRIMARY KEY(shop_id, payer_vpa));
 CREATE TABLE IF NOT EXISTS demo_queue(
   seq INTEGER PRIMARY KEY, shop_id TEXT NOT NULL, label TEXT, payload_json TEXT NOT NULL,
   ingested INTEGER NOT NULL DEFAULT 0);
