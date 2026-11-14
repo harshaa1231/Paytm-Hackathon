@@ -17,6 +17,8 @@ FACTS = {
     "paytm_merchants": "1.64 crore subscription merchants (Paytm Q2 FY27 results)",
     "paytm_fs_revenue": "financial services revenue ₹912 cr last quarter, +49% (Paytm Q2 FY27)",
     "postpaid": "Paytm Postpaid relaunched Sept 2025 with Suryoday SFB, limits up to ₹60,000",
+    # NEVER present this as "shopkeeper credit": the press note does not break non-institutional credit down by shopkeepers.
+    "aidis_2019": "NSO All India Debt & Investment Survey 2019 (NSS 77th round), MoSPI press note 24 Aug 2021: of households' outstanding cash debt, 34% in rural India and 13% in urban India came from non-institutional credit agencies (institutional: 66% rural, 87% urban). Source: https://www.mospi.gov.in/sites/default/files/press_release/press_note-AIDIS-240821.pdf",
 }
 
 SYNTHETIC_FOOTER = "Synthetic demo data shaped on Sungu et al. 2026 (published findings only). Not real customers."
