@@ -60,3 +60,23 @@ def test_good_rephrase_is_shown(monkeypatch):
 def test_judge_unavailable_shows_template():
     out = judge.judge_card("Ramesh paid ₹450.", FACTS, try_rephrase=True, mode="replay")
     assert out["source"] == "template" and out["stage2"]["available"] is False
+
+
+def test_rephrase_that_drops_the_question_or_an_amount_is_rejected(monkeypatch):
+    template = "Lakshmi N paid you 26 times. Allow Lakshmi N udhaar up to ₹100?"
+    facts = {"allowed_amounts_paise": [10_000], "card_type": "who_to_trust", "shop_id": "S1"}
+    for bad in ("Lakshmi N ne 26 baar payment kiya, koi udhaar nahi hai.",          # question dropped, amount dropped
+                "Lakshmi N ko ₹100 udhaar de do."):                                    # decides for the shopkeeper
+        def fake(task, prompt, schema, _bad=bad, **k):
+            if task == "rephrase_card":
+                return RephraseAnswer(text=_bad), {"provider": "groq", "error": None, "latency_ms": 1}
+            return ToneVerdict(numbers_match=True, fair_and_polite=True, reason="ok"), {"provider": "groq", "error": None, "latency_ms": 1}
+        monkeypatch.setattr(llm, "call", fake)
+        out = judge.judge_card(template, facts, try_rephrase=True)
+        assert out["source"] == "template" and out["text"] == template
+
+
+def test_keeps_meaning_checks():
+    t = "About ₹20,300 of the ₹38,000 udhaar should come back (likely ₹11,500 to ₹28,300)."
+    assert judge.keeps_meaning(t, "₹20,300 ka ₹38,000 wapas aayega") == ["rephrase dropped amount(s): ₹11500, ₹28300"]
+    assert judge.keeps_meaning(t, "Lagbhag ₹20,300 / ₹38,000 aayega (shayad ₹11,500 se ₹28,300).") == []

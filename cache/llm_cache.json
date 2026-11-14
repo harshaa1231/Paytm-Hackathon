@@ -1,1 +1,122 @@
-{}
+{
+ "09010aab20bbc29b7128ee679f74a955d3293a3fdc4ddbda61dde845929c78c1": {
+  "provider": "groq",
+  "response": "{\"candidate_id\":\"S001-C005\",\"confidence\":0.9,\"reason\":\"Payer name contains Irfan, matching khata name Irfan bhai\"}",
+  "task": "match_name"
+ },
+ "11c4846e9f96ca54892b981ef17546c3df40d295a404db0d99c89638ef0011f5": {
+  "provider": "groq",
+  "response": "{\"text\":\"About ₹19,800 of the ₹36,900 udhaar agle 7 din mein wapas aane ki sambhavna hai (likely).\"}",
+  "task": "rephrase_card"
+ },
+ "25127906b797204af0de66019be1609a3eb31f7e195b1e9660bc24e225f94594": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All rupee amounts (₹200, ₹300) are in the allowed list and the tone is neutral and respectful.\"}",
+  "task": "tone_check"
+ },
+ "2593540ee0fd6393983ae0052f1e33967f4e7083ca178e26aa658611346bc7a5": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"Amount matches ledger and tone is respectful\"}",
+  "task": "tone_check"
+ },
+ "5057c1a9afb31e2a9dc7d938e47c48e8bf3149b02549aa3226b4662db3951fc8": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All amounts (₹800, ₹300, ₹500) match allowed list and tone is respectful\"}",
+  "task": "tone_check"
+ },
+ "57025d1012a481e793a2935a9960f50caf0097ca4d35407114399b0c6a286e5e": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All rupee amounts in the message match ledger facts and the tone is respectful without any inappropriate content.\"}",
+  "task": "tone_check"
+ },
+ "609f098483657fde5f39fcf1eb33773486e624e9c867bcdd38837658727187c0": {
+  "provider": "groq",
+  "response": "{\"text\":\"Paytm pe ₹800 udhaar ka ₹300 clear karo? Baaki ₹500 abhi bhi bacha hai.\"}",
+  "task": "rephrase_card"
+ },
+ "6d10f2b40af51f10f90f9712d7ed5286202e76361c8850c3d09aa7a3404dbdf6": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All amounts match ledger and tone is neutral and respectful\"}",
+  "task": "tone_check"
+ },
+ "7115b56a784ae45740609f1a4207713ba7399c7aa3b09665e08bbcb5f1b366f4": {
+  "provider": "groq",
+  "response": "{\"text\":\"About ₹20,600 of the ₹38,450 udhaar aapko agle 7 din mein wapas mil sakta hai (likely).\"}",
+  "task": "rephrase_card"
+ },
+ "74d5640a9fe035eda25137fa193cf53f50aa6bd4c0389068108062d500a12f17": {
+  "provider": "groq",
+  "response": "{\"text\":\"PhonePe pe, ₹450 udhaar clear karna?\"}",
+  "task": "rephrase_card"
+ },
+ "76ea29a595ecea4324999e68d39e57a63090651ee4a2b74c562c5d54acfa0be9": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All rupee amounts mentioned match ledger facts and the tone is neutral and respectful.\"}",
+  "task": "tone_check"
+ },
+ "791dc6eec8767054949980b72f079320e9cff47e35866cb2be95c3b9fd7ea5ec": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All amounts match ledger and tone is respectful\"}",
+  "task": "tone_check"
+ },
+ "918c08558bbcdee299961e7f11c6eaa57814198db6a21c93c6c14aee868ee4c9": {
+  "provider": "groq",
+  "response": "{\"text\":\"About ₹20,300 of the ₹37,700 udhaar aane wale 7 din mein wapas aayega (likely).\"}",
+  "task": "rephrase_card"
+ },
+ "9e92b1080086e133c396279d02c8af8ed57a76483abd1eead17ec762575dbab9": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"Amount matches ledger and tone is polite without any disrespect\"}",
+  "task": "tone_check"
+ },
+ "a0b3edb99941e77280ed1c5ff27aa258c71c9db86ee37a8080bc95eb5c0e5182": {
+  "provider": "groq",
+  "response": "{\"text\":\"Google Pay se ₹200 udhaar poora clear ho gaya, aur ₹300 extra bhi aaya. Extra rakho.\"}",
+  "task": "rephrase_card"
+ },
+ "c157202c7df6a35ca5291b1005947176ffcd90b738e91b8baccdbc0c35bf1c46": {
+  "provider": "groq",
+  "response": "{\"text\":\"Lakshmi N ne aapko pichle 6 mahine mein 26 baar payment kiya hai, aur koi udhaar record nahi hai.\"}",
+  "task": "rephrase_card"
+ },
+ "c8179ffe9e9d11faf1601dca99fac9fcd37847425372e043c1ecb9015b052f19": {
+  "provider": "groq",
+  "response": "{\"candidate_id\":\"S001-C001\",\"confidence\":0.93,\"reason\":\"Payer name RAMESH K matches khata 'Ramesh dudh wala' and the amount equals the open udhaar of ₹450\"}",
+  "task": "match_name"
+ },
+ "d5acb53fa2c0d769704ef9103deb96682ae12f1f5fd2aacc97f6b6b313653c84": {
+  "provider": "groq",
+  "response": "{\"text\":\"About ₹600 of the ₹1,550 udhaar aane wale 7 din mein wapas aayega (likely ₹0 t).\"}",
+  "task": "rephrase_card"
+ },
+ "e0a497a549e109f707b6ee05917e7e94bc6f67e2e75f06c1edce1074f78cd312": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"Amounts in message match ledger and tone is respectful\"}",
+  "task": "tone_check"
+ },
+ "e717c9ebfef4015fe1f311a6ddbb99847a760d4cf4d4591ae894864b51aabdb8": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All rupee amounts in the message match allowed amounts and the tone is neutral and respectful.\"}",
+  "task": "tone_check"
+ },
+ "ef3a14280fe46d4157dfef66fa1d26b020a3d6507f46414ee3cc0c1d4cf6328f": {
+  "provider": "groq",
+  "response": "{\"text\":\"Paytm pe hai. ₹600 udhaar clear karna?\"}",
+  "task": "rephrase_card"
+ },
+ "f1eb3d3194e2a57975dfc05747bdf6f2241c476b22017f42a39fce82c9f32bf8": {
+  "provider": "groq",
+  "response": "{\"numbers_match\":true,\"fair_and_polite\":true,\"reason\":\"All counts (26 payments, 6 months, no udhaar) match ledger and tone is respectful\"}",
+  "task": "tone_check"
+ },
+ "fec12d7f980fb70670cc79835c4761d933e400bb05f1daa8b2db8dfd18f51539": {
+  "provider": "groq",
+  "response": "{\"text\":\"About ₹19,900 of the ₹37,100 udhaar aane wale 7 din mein wapas aayega (likely).\"}",
+  "task": "rephrase_card"
+ },
+ "feca88e077dad99ca822743c0b01a444dcb81729fb66b2ec8df2eb8ab73a300e": {
+  "provider": "groq",
+  "response": "{\"text\":\"About ₹20,300 of the ₹38,000 udhaar likely aane wali hai agle 7 din mein.\"}",
+  "task": "rephrase_card"
+ }
+}

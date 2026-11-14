@@ -56,6 +56,18 @@ def stage1(text: str, facts: dict, conn: sqlite3.Connection | None = None) -> di
     return {"ok": not problems, "problems": problems}
 
 
+def keeps_meaning(template: str, candidate: str) -> list[str]:
+    """Deterministic checks for a rephrase: it may not DROP any ₹ amount from the template, and if the template asks
+    the shopkeeper a question, the rephrase must still ask it (no deciding for them)."""
+    problems = []
+    missing = sorted(set(amounts_in(template)) - set(amounts_in(candidate)))
+    if missing:
+        problems.append("rephrase dropped amount(s): " + ", ".join(f"₹{m / 100:g}" for m in missing))
+    if template.rstrip().endswith("?") and "?" not in candidate:
+        problems.append("rephrase dropped the question to the shopkeeper")
+    return problems
+
+
 def tone_prompt(text: str, facts: dict) -> str:
     public_facts = {k: v for k, v in facts.items() if k in ("allowed_amounts_display", "card_type", "count_facts")}
     return (
@@ -72,8 +84,10 @@ def tone_prompt(text: str, facts: dict) -> str:
 def rephrase_prompt(text: str) -> str:
     return (
         "Rewrite this ledger-app message as short, warm, simple Hinglish in Latin script for a kirana shopkeeper "
-        "(max 2 sentences). Keep EVERY ₹ amount and number exactly as written, keep the names exactly, add no new "
-        f"facts.\nMessage: {llm.wrap_data(text)}\n"
+        "(max 2 sentences). Keep EVERY ₹ amount and number exactly as written (do not drop any), keep the names exactly, "
+        "keep words like 'about' and 'likely' (don't make an estimate sound certain), and if the message ends with a "
+        "question, end with the same question: the shopkeeper decides, so never tell them what to do. Add no new facts.\n"
+        f"Message: {llm.wrap_data(text)}\n"
         'Return JSON: {"text": "<rewritten message>"}'
     )
 
@@ -91,6 +105,9 @@ def judge_card(template_text: str, facts: dict, *, conn: sqlite3.Connection | No
             candidate, source = ans.text.strip(), "llm_rephrase"
 
     s1 = stage1(candidate, facts, conn)
+    if source == "llm_rephrase":
+        extra = keeps_meaning(template_text, candidate)
+        s1 = {"ok": s1["ok"] and not extra, "problems": s1["problems"] + extra}
     verdict, meta2 = llm.call("tone_check", tone_prompt(candidate, facts), ToneVerdict, shop_id=shop_id, mode=mode)
     s2 = {"provider": meta2["provider"], "latency_ms": meta2["latency_ms"], "error": meta2["error"],
           "available": verdict is not None,
