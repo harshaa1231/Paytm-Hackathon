@@ -8,7 +8,7 @@
     "tab_customers": "Customers",
     "tab_pakka": "PakkaKhata ✨",
     "concept_label": "Concept: inside Paytm for Business",
-    "owed_total": "Total udhaar owed to you",
+    "owed_total": "Udhaar owed to you",
     "wp_title": "{name} paid {amount}",
     "wp_title_unknown": "{amount} came in on {app}",
     "wp_body_exact": "On {app}. Clear the {open} udhaar?",

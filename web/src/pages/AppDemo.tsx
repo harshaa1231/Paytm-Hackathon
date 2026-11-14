@@ -207,7 +207,7 @@ export default function AppDemo({ cfg, shop, setShop, lang, setLang }:
         <button onClick={() => go("khata", "customers")} className="row-span-2 bg-white rounded-[22px] p-4 text-left flex flex-col">
           <span className="w-10 h-10 rounded-xl grid place-items-center text-white" style={{ background: NAVY }}><BookOpen size={20} /></span>
           <span className="mt-auto pt-8 block text-[15px] font-semibold text-[#222]">Business Khata</span>
-          <span className="block text-[13px] text-ink-3">You'll get</span>
+          <span className="block text-[13px] text-ink-3">Udhaar owed to you</span>
           <span className="block text-[20px] font-bold num text-[#c2410c]">{st ? inr(st.owed_total_paise) : "…"}</span>
           <span className="block text-[12px] text-ink-3">from {st?.open_customers ?? 0} customers</span>
         </button>
@@ -219,7 +219,7 @@ export default function AppDemo({ cfg, shop, setShop, lang, setLang }:
         <button onClick={() => go("khata", "pakka")} className="bg-white rounded-[22px] p-4 text-left flex items-center gap-3">
           <CalendarClock size={26} className="text-sky shrink-0" />
           <span><span className="block text-[14px] font-semibold text-[#222] leading-tight">Coming back this week</span>
-            <span className="block text-[12px] text-ink-3 num">{coming?.range ? `~${inr(coming.amount_paise)}` : "Nothing pending"}</span></span>
+            <span className="block text-[12px] text-ink-3 num">{coming?.range ? `~${inr(coming.amount_paise)} of ${inr(coming.range.total_paise)}` : "Nothing pending"}</span></span>
         </button>
       </div>
 
@@ -270,7 +270,7 @@ export default function AppDemo({ cfg, shop, setShop, lang, setLang }:
       <SubHeader title={L.app_bar ?? "Business Khata"} sub={shopName} />
       <div className="px-3 pt-3">
         <WhiteCard className="p-4 grid grid-cols-2 divide-x divide-slate-100">
-          <div className="pr-3"><div className="text-[12px] text-ink-3">You'll get</div><div className="text-[22px] font-bold num text-[#c2410c]">{st ? inr(st.owed_total_paise) : "…"}</div></div>
+          <div className="pr-3"><div className="text-[12px] text-ink-3">Udhaar owed to you</div><div className="text-[22px] font-bold num text-[#c2410c]">{st ? inr(st.owed_total_paise) : "…"}</div></div>
           <div className="pl-4"><div className="text-[12px] text-ink-3">Customers with udhaar</div><div className="text-[22px] font-bold num">{st?.open_customers ?? 0}</div></div>
         </WhiteCard>
         <div className="mt-3 grid grid-cols-2 bg-white rounded-full p-1 text-[14px] font-semibold">
@@ -301,7 +301,7 @@ export default function AppDemo({ cfg, shop, setShop, lang, setLang }:
                 <span className="flex-1 min-w-0"><span className="block text-[14px] font-medium truncate">{k.name}</span>
                   <span className="block text-[11.5px] text-ink-3">{k.since_days === 0 ? "Since today" : `Since ${k.since_days} day${k.since_days > 1 ? "s" : ""}`}</span></span>
                 <span className="text-right"><span className="block text-[15px] font-semibold num text-[#c2410c]">{inr(k.owed_paise)}</span>
-                  <span className="block text-[10.5px] text-ink-3">you'll get</span></span>
+                  <span className="block text-[10.5px] text-ink-3">udhaar owed</span></span>
               </div>
             ))}
             {khata.length === 0 && <div className="py-10 text-center text-[13px] text-ink-3">No udhaar open.</div>}
