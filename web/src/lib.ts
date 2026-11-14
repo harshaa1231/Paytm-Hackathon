@@ -18,6 +18,13 @@ export type ShopState = {
   queue_left: number; next_label: string | null; undo: { txn_id: string; title: string } | null;
 };
 
+export type TodayPayment = {
+  txn_id: string; payer_name: string; payer_vpa: string; amount_paise: number; app: string; ts: string;
+  status: "needs_tap" | "udhaar_cleared" | "purchase" | "failed"; applied_paise: number; card_title: string | null;
+};
+export type Today = { date: string; total_paise: number; count: number; payments: TodayPayment[] };
+export type KhataCustomer = { customer_id: string; name: string; owed_paise: number; since_days: number };
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
@@ -46,6 +53,8 @@ export const api = {
   reset: () => req<any>("/v1/demo/reset", { method: "POST" }),
   retrain: () => req<any>("/v1/demo/retrain", { method: "POST" }),
   payments: (mid: string) => req<{ payments: any[] }>(`/v1/demo/${mid}/payments`),
+  today: (mid: string) => req<Today>(`/v1/demo/${mid}/today`),
+  khata: (mid: string) => req<{ customers: KhataCustomer[]; total_paise: number }>(`/v1/demo/${mid}/khata`),
   trace: (mid: string, txn: string) => req<any>(`/v1/demo/${mid}/trace/${encodeURIComponent(txn)}`),
   internals: (mid: string) => req<any>(`/v1/demo/${mid}/internals`),
   events: (mid: string) => req<{ events: any[] }>(`/v1/demo/${mid}/events?limit=80`),

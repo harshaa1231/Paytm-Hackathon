@@ -129,3 +129,14 @@ def test_demo_admin_closed_needs_key(client, monkeypatch):
     monkeypatch.setattr(config, "DEMO_OPEN_ADMIN", False)
     assert client.post("/v1/demo/reset").status_code == 401
     assert client.post("/v1/demo/reset", headers={"X-Admin-Key": "adm"}).status_code == 200
+
+
+def test_demo_today_and_khata(client):
+    sim = client.post("/v1/demo/S001/simulate").json()
+    today = client.get("/v1/demo/S001/today").json()
+    assert today["payments"][0]["txn_id"] == sim["payment"]["txn_id"] and today["payments"][0]["status"] == "needs_tap"
+    assert "******" in today["payments"][0]["payer_vpa"]
+    client.post("/v1/merchants/S001/decisions", json={"card_id": sim["card"]["card_id"], "action": "clear_full"}, headers=H1)
+    assert client.get("/v1/demo/S001/today").json()["payments"][0]["status"] == "udhaar_cleared"
+    k = client.get("/v1/demo/S001/khata").json()
+    assert k["total_paise"] == 3_800_000 and len(k["customers"]) == 19

@@ -65,8 +65,8 @@ export default function UnderTheHood({ cfg, shop, setShop, lang }: { cfg: DemoCo
 
       {tab === "pay" && (
         payments.filter((p) => p.kind === "match").length === 0 ? (
-          <div className="panel panel-pad text-ink-2">No payments processed yet. Go to <a className="text-sky underline" href="#/shopkeeper">Shopkeeper</a> and press
-            <b> Simulate next payment</b>.</div>
+          <div className="panel panel-pad text-ink-2">No payments processed yet. Go to <a className="text-sky underline" href="#/">the app demo</a> and press
+            <b> Next payment</b>.</div>
         ) : (
           <div className="grid lg:grid-cols-[280px_1fr] gap-5 items-start">
             <div className="panel p-2">

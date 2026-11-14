@@ -96,7 +96,7 @@ export default function Learning() {
               <td className="num">{h.roc_auc}</td><td className="num">{h.brier}</td></tr>))}</tbody>
         </table>
         <p className="text-[12.5px] text-ink-3">Each step adds the next batch of repayment outcomes (more pilot shops reporting back) plus this shop's own closed udhaar, then scores the same
-          held-out shops. Reset demo on the Shopkeeper page restores the seeded model.</p>
+          held-out shops. Reset on the app demo restores the seeded model.</p>
       </section>
     </div>
   );

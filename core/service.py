@@ -12,7 +12,9 @@ import config
 from core import cards, db, forecast, graph, judge, ladder, ledger, recommend
 from core.i18n import t
 from core.money import fmt_inr
-from core.timeutil import now_iso
+from datetime import timedelta
+
+from core.timeutil import iso, now_iso, parse
 
 
 # ------------------------------------------------------------------ cards
@@ -152,6 +154,7 @@ def next_demo_payment(conn: sqlite3.Connection, shop_id: str, lang: str = "en", 
     if not r:
         return None
     p = json.loads(r["payload_json"])
+    p["ts"] = iso(parse(config.DEMO_NOW) - timedelta(minutes=4 * (10 - int(r["seq"]))))   # 08:54 ... 09:22 on demo morning
     res = ingest_payment(p, lang, flow)
     conn.execute("UPDATE demo_queue SET ingested=1 WHERE seq=?", (r["seq"],))
     conn.commit()

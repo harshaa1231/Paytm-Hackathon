@@ -269,6 +269,47 @@ def demo_simulate(mid: str = PathParam(pattern=MID_RE), lang: str = Query(defaul
             "card": cards.public(r["card"]) if r.get("card") and r["status"] == "card_pending" else None}
 
 
+@app.get("/v1/demo/{mid}/today")
+def demo_today(mid: str = PathParam(pattern=MID_RE), conn=Depends(conn_dep)):
+    """Today's QR payments for the app's Home and Payments screens (read-only)."""
+    demo_shop(mid)
+    day = now_iso()[:10]
+    rows = conn.execute("SELECT * FROM payments WHERE shop_id=? AND substr(ts,1,10)=? ORDER BY ts DESC", (mid, day)).fetchall()
+    out, total = [], 0
+    for r in rows:
+        card = cards.get_card(conn, mid, f"pay:{r['txn_id']}")
+        applied = ledger.net_applied(conn, r["txn_id"])
+        if r["status"] != "SUCCESS":
+            status = "failed"
+        elif card and card["status"] == "pending":
+            status = "needs_tap"
+        elif applied > 0:
+            status = "udhaar_cleared"
+        else:
+            status = "purchase"
+        if r["status"] == "SUCCESS":
+            total += r["amount_paise"]
+        out.append({"txn_id": r["txn_id"], "payer_name": r["payer_name"], "payer_vpa": mask_vpa(r["payer_vpa"]),
+                    "amount_paise": r["amount_paise"], "app": r["app"], "ts": r["ts"], "status": status, "applied_paise": applied,
+                    "card_title": card["title"] if card else None})
+    return {"date": day, "total_paise": total, "count": sum(1 for p in out if p["status"] != "failed"), "payments": out}
+
+
+@app.get("/v1/demo/{mid}/khata")
+def demo_khata(mid: str = PathParam(pattern=MID_RE), conn=Depends(conn_dep)):
+    """Customers with open udhaar for the Business Khata screen (read-only)."""
+    demo_shop(mid)
+    now = now_iso()
+    out = []
+    for cid, us in ledger.customers_with_open_udhaar(conn, mid).items():
+        c = ledger.get_customer(conn, mid, cid)
+        oldest = min(u["given_at"] for u in us)
+        out.append({"customer_id": cid, "name": c["khata_name"], "owed_paise": sum(u["remaining_paise"] for u in us),
+                    "since_days": max(0, int((datetime.fromisoformat(now) - datetime.fromisoformat(oldest)).days))})
+    out.sort(key=lambda x: -x["owed_paise"])
+    return {"customers": out, "total_paise": sum(x["owed_paise"] for x in out)}
+
+
 @app.post("/v1/demo/{mid}/undo")
 def demo_undo(body: UndoReq, mid: str = PathParam(pattern=MID_RE), conn=Depends(conn_dep)):
     demo_shop(mid)

@@ -21,7 +21,7 @@ def test_api_has_no_money_or_messaging_routes():
     paths = {r.path for r in app.routes if hasattr(r, "methods")}
     expected = {"/health", "/v1/events/payment", "/v1/events/khata", "/v1/merchants/{mid}/cards", "/v1/merchants/{mid}/decisions",
                 "/v1/admin/reset", "/v1/admin/retrain", "/v1/demo/config", "/v1/demo/i18n", "/v1/demo/{mid}/state",
-                "/v1/demo/{mid}/simulate", "/v1/demo/{mid}/undo", "/v1/demo/{mid}/payments", "/v1/demo/{mid}/trace/{txn_id}",
+                "/v1/demo/{mid}/simulate", "/v1/demo/{mid}/undo", "/v1/demo/{mid}/today", "/v1/demo/{mid}/khata", "/v1/demo/{mid}/payments", "/v1/demo/{mid}/trace/{txn_id}",
                 "/v1/demo/{mid}/internals", "/v1/demo/{mid}/events", "/v1/demo/reports", "/v1/demo/reset", "/v1/demo/retrain",
                 "/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json"}
     assert paths == expected, f"unexpected routes: {paths - expected}"
