@@ -5,26 +5,26 @@ them from the screen.
 
 ## Before you go on stage
 1. `docker run -p 8000:8000 pakkakhata` (or `uvicorn api.main:app --port 8000`), then open http://localhost:8000.
-2. **Turn Wi-Fi off.** The header chip says **Offline-safe** (replay mode).
-3. Press **Reset demo** on the Shopkeeper page. Test at 1366×768: the phone frame fits.
+2. **Turn Wi-Fi off.** It runs from the recorded cache (replay mode); under **For judges** the header chip says **Offline mode**.
+3. Press **Reset** (next to the phone). Test at 1366×768: the phone frame fits.
 4. Backup: the 2-minute screen recording.
 
 ## 90 seconds
-1. **Shopkeeper.** Press **Simulate next payment** (Ramesh, ₹450 on PhonePe). The card says *"Ramesh dudh wala paid ₹450. On PhonePe. Clear the ₹450 udhaar?"* Tap **Clear ₹450**. Total owed drops from **₹38,450 to ₹38,000**. Mention the Undo.
-2. **Under the hood** (10 s). Click "Under the hood" under the event. Point at the bank name **RAMESH K** vs the khata name **Ramesh dudh wala**. There are two Rameshes, both scoring 105, so the case is ambiguous and goes to the LLM (offline it falls back to rules, which use the exact ₹450 amount). Show the judge's two checks and the LangGraph strip: it paused at `ask_shopkeeper`, then resumed.
-3. **Back to Shopkeeper: the Lakshmi card.** *"Lakshmi N paid you 26 times in the last 6 months and has no udhaar on record. Visits on a steady schedule and never away more than 9 days. Allow Lakshmi N udhaar up to ₹100?"* with *"✓ Agreed to share their payment record with this shop"*. Tap **Yes, allow ₹100**. It's recorded at ladder step 1 as a khata entry; nothing is sent to the customer.
+1. **The app.** Press **Next payment** (right of the phone). A notification drops in: *"₹450 received from Ramesh K"*, and the home screen shows the alert row *"₹450 from Ramesh K · Ramesh dudh wala's udhaar? · Confirm"*. Tap **Confirm** → Business Khata → the card *"Ramesh dudh wala paid ₹450"* with Groq's checked Hinglish *"PhonePe pe, ₹450 udhaar clear karna?"*. Tap **Clear ₹450**. Udhaar owed drops from **₹38,450 to ₹38,000**. Mention the Undo.
+2. **Under the hood** (10 s). Click **For judges → Under the hood**. Point at the bank name **RAMESH K** vs the khata name **Ramesh dudh wala**. There are two Rameshes, both scoring 105, so the case is ambiguous and goes to the LLM (Groq picked Ramesh dudh wala: "amount matches open udhaar ₹450"; replayed from the recorded cache). Show the judge's two checks and the LangGraph strip: it paused at `ask_shopkeeper`, then resumed.
+3. **Back to the app: the Lakshmi card** (Business Khata → Who you can trust). *"Lakshmi N paid you 26 times in the last 6 months and has no udhaar on record. Visits on a steady schedule and never away more than 9 days. Allow Lakshmi N udhaar up to ₹100?"* with *"✓ Agreed to share their payment record with this shop"*. Tap **Yes, allow ₹100**. It's recorded at ladder step 1 as a khata entry; nothing is sent to the customer.
 4. **Forecast card.** *"About ₹20,300 of the ₹38,000 udhaar should come back in the next 7 days (likely ₹11,500 to ₹28,300)."*
-5. **Proof.** Bias chart, one sentence: *"Among equally reliable customers the shopkeeper's own choices favour his in-group by 11 points; our repayment-trained model's gap is zero. A model trained on his yes/no copies his bias as soon as behaviour hints at the group: up to 14 points in the sweep."* Then the **Learning loop** chart. Done.
+5. **For judges → Evidence & proof.** Evidence (India first), then the bias chart, one sentence: *"Among equally reliable customers the shopkeeper's own choices favour his in-group by 11 points; our repayment-trained model's gap is zero. A model trained on his yes/no copies his bias as soon as behaviour hints at the group: up to 14 points in the sweep."* Then the **Learning loop** chart. Done.
 
 Optional extras if asked: the remaining queue items show Sunita/Suneeta (partial ₹300 of ₹800), Raju's family paying from a nameless UPI ID (VPA memory), Irfan overpaying (advance or purchase?), a duplicate event (ignored), a FAILED payment (ignored) and a prompt-injection name (treated as data).
 
 ## Numbers to have ready
-- Trust model: held-out AUC 0.69 vs oracle ceiling 0.77. Threshold picked for ~90% precision on validation shops. On test shops, 83% of selected people with no credit history repaid on time (base 71%).
+- Trust model: held-out AUC 0.69 (95% range 0.64–0.74 across held-out shops) vs oracle ceiling 0.77; it never sees names or groups. Threshold picked for ~90% precision on validation shops. On test shops, 83% of selected people with no credit history repaid on time (base 71%).
 - Forecast: the 80% range covered the real total in 96% of 612 held-out shop-weeks (conservative).
 - Matcher replay: 0 wrong customers proposed over 4 weeks; VPA memory takes over by week 3. 60 labelled Indian name pairs: 97.1% precision at auto-match, 5% false-match rate; near-identical names in one shop never auto-matched.
 - Scale (India): AIDIS 2019 — 34% (rural) and 13% (urban) of households' outstanding cash debt is from non-institutional agencies. Never call this "shopkeeper credit".
 - Foreign method checks only: UK retail data (feature method sanity check, not Indian, not repayment) AUC 0.80 vs 0.76; Taiwan credit data (audit method only).
-- **Retrain button:** in the seeded run, adding batch 2 moved held-out AUC 0.691 → 0.688. That's noise-level, so say so if it happens on stage: "with 40 held-out shops this is within noise; what matters is it never learns from his yes/no."
+- **Retrain button:** measured steps 0.691 → 0.685 → 0.692 held-out AUC. Each change is within noise (the 95% range across held-out shops is about ±0.05), and the page says so. It learns only from synthetic repayment batches; no shop's records go into the shared model.
 
 ## Judge Q&A (short answers)
 - **What's new?** Other apps record who owes money. We decide who to trust next, start small, and learn only from repayments, so we don't copy the shopkeeper's bias. Show the bias chart.

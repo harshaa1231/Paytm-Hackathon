@@ -49,11 +49,11 @@ On macOS without Homebrew, LightGBM can't find `libomp`. Run `bash scripts/fix_l
 `ADMIN_KEY` if you don't want visitors pressing Reset. Vercel and Cloudflare aren't a fit for the backend: the
 LangGraph pause/resume keeps paused threads in a long-running process, the ledger is SQLite on disk and LightGBM is native.
 
-**Tests:** `.venv/bin/python -m pytest` (112 tests, offline).
+**Tests:** `.venv/bin/python -m pytest` (146 tests, offline, including the full 8-payment demo as one snapshot test).
 
 **LLM modes** (`.env`, see `.env.example`): `DEMO_MODE=replay` (default) uses cached answers and rules and never touches
 the network. `live` calls Groq (`openai/gpt-oss-120b`), then Gemini Flash (model ID resolved at runtime from the model
-list), then rules. `record` does the same and saves answers to `cache/llm_cache.json` for replay.
+list), then rules. `record` does the same and saves answers to `cache/llm_cache.json` for replay. To refresh the cache: put your keys in `.env` (never in `.env.example`), then `DEMO_MODE=record .venv/bin/python scripts/record_demo.py`. The committed cache was recorded with Groq; the judge's stage 1 rejects any rephrase that drops an amount or the question, so Groq's Hinglish is shown only on cards where it kept both (in the recorded run: the payment cards).
 
 ---
 
@@ -179,6 +179,6 @@ data/generate.py       seeded synthetic world + demo shops;  data/loaders.py  ex
 web/                   React app (Shopkeeper · Under the hood · Proof · Learning loop)
 experiments/           real-data validation (never imported by the app)
 reports/               every metric shown anywhere
-tests/                 112 pytest tests, offline
+tests/                 146 pytest tests, offline
 facts.py               the only external numbers we may show, with sources
 ```
