@@ -48,7 +48,7 @@ export default function App() {
               <div className="text-[11px] text-ink-3 hidden sm:block">Other apps track who owes you. PakkaKhata shows who to trust.</div>
             </div>
           </a>
-          <nav className="ml-auto flex gap-1 overflow-x-auto">
+          <nav className="ml-auto flex gap-1 overflow-x-auto min-w-0">
             {ROUTES.map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => go(id)}
                 className={cx("btn btn-md whitespace-nowrap", route === id ? "bg-navy text-white" : "text-ink-2 hover:bg-slate-100")}>

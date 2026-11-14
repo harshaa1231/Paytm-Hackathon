@@ -132,9 +132,9 @@ export default function Shopkeeper({ cfg, shop, setShop, lang, setLang }:
   );
 
   return (
-    <div className="grid lg:grid-cols-[1fr_400px_1fr] gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px_minmax(0,1fr)] gap-6 items-start">
       {/* left: presenter controls */}
-      <section className="space-y-4 order-2 lg:order-1">
+      <section className="space-y-4 order-2 lg:order-1 min-w-0">
         <div className="panel panel-pad space-y-4">
           <div className="h-eyebrow">Demo controls</div>
           <div>
@@ -189,7 +189,7 @@ export default function Shopkeeper({ cfg, shop, setShop, lang, setLang }:
       </section>
 
       {/* center: the phone */}
-      <section className="order-1 lg:order-2 flex flex-col items-center">
+      <section className="order-1 lg:order-2 flex flex-col items-center min-w-0">
         <div className="text-[11px] text-ink-3 mb-2 text-center">{L.concept_label ?? "Concept: inside Paytm for Business"} · not the real app</div>
         <div className="hidden sm:block w-[390px] h-[800px] rounded-[48px] bg-[#0b1220] p-3 shadow-phone">
           <div className="relative w-full h-full rounded-[38px] overflow-hidden">
@@ -201,7 +201,7 @@ export default function Shopkeeper({ cfg, shop, setShop, lang, setLang }:
       </section>
 
       {/* right: integration story */}
-      <section className="order-3 space-y-4">
+      <section className="order-3 space-y-4 min-w-0">
         <div className="panel panel-pad">
           <div className="h-eyebrow mb-2">Same JSON as the API</div>
           <p className="text-[13.5px] text-ink-2 leading-relaxed">This phone renders <code className="text-[12px] bg-slate-100 px-1.5 py-0.5 rounded">GET /v1/merchants/{shop}/cards</code>,
