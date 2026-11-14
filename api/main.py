@@ -37,7 +37,7 @@ from core import cards, db, graph, learning, ledger, recommend, service  # noqa:
 from core.i18n import LANGS, coverage  # noqa: E402
 from core.privacy import mask_vpa  # noqa: E402
 from core.timeutil import now_iso  # noqa: E402
-from facts import FACTS, SYNTHETIC_FOOTER  # noqa: E402
+from facts import FACTS, SCREEN_FACTS, SYNTHETIC_FOOTER  # noqa: E402
 
 MID_RE = r"^[A-Za-z0-9_\-]{2,32}$"
 ID_RE = r"^[A-Za-z0-9_\-:.]{3,64}$"
@@ -376,7 +376,7 @@ def demo_reports():
             "sweep": _report("bias_sweep.json"), "matcher_replay": _report("learning_matcher.json"),
             "learning_state": learning.load_state(), "real_retail": _report("real_retail_metrics.json"),
             "fairness_external": _report("fairness_external.json"), "matcher_metrics": _report("matcher_metrics.json"), "aksharantar": _report("aksharantar_metrics.json"),
-            "facts": FACTS, "trust_target_precision": config.TRUST_TARGET_PRECISION}
+            "facts": {**FACTS, **SCREEN_FACTS}, "trust_target_precision": config.TRUST_TARGET_PRECISION}
 
 
 @app.post("/v1/demo/reset", dependencies=[Depends(demo_admin)])

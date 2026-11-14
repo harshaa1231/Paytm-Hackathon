@@ -11,8 +11,11 @@
    ],
    "train_rows": 2003,
    "roc_auc": 0.6908,
-   "brier": 0.1562,
-   "shop_outcomes_used": 0
+   "roc_auc_ci95": [
+    0.6399,
+    0.7412
+   ],
+   "brier": 0.1562
   }
  ]
 }

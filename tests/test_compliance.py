@@ -67,3 +67,48 @@ def test_ingesting_a_payment_never_writes_the_ledger(conn, tmp_path):
     flow.ingest({"txn_id": "T1", "shop_id": "S1", "payer_vpa": "9849012345@ybl", "payer_name": "RAMESH K",
                  "amount_paise": 45_000, "app": "PhonePe", "status": "SUCCESS", "ts": "2026-11-14T09:00:00+05:30"})
     assert conn.execute("SELECT COUNT(*) FROM allocations").fetchone()[0] == 0      # nothing until the tap
+
+
+def test_screen_facts_avoid_banned_wording_but_keep_meaning():
+    from facts import FACTS, SCREEN_FACTS
+    for k, v in SCREEN_FACTS.items():
+        assert k in FACTS
+        for b in BANNED + ("lending",):
+            assert b not in v.lower(), (k, v)
+    assert "small credit (up to ₹100)" in SCREEN_FACTS["random_borrowers"]
+    assert "3.5 days faster" in SCREEN_FACTS["random_borrowers"] and "42%" in SCREEN_FACTS["in_group_favouritism"]
+
+
+def test_reports_endpoint_serves_screen_wording():
+    from fastapi.testclient import TestClient
+    from api.main import app
+    facts = TestClient(app).get("/v1/demo/reports").json()["facts"]
+    for k in ("random_borrowers", "owner_lending", "in_group_favouritism"):
+        for b in BANNED + ("lending",):
+            assert b not in facts[k].lower()
+
+
+def test_retrain_never_uses_shop_data(tmp_path, monkeypatch):
+    """Retrain learns only from synthetic repayment batches; no shop's own data enters the shared model."""
+    import shutil
+
+    import pytest
+    from core import db, features, learning
+    if not config.TRAIN_DB_PATH.exists():
+        pytest.skip("training world not generated")
+    models = tmp_path / "models"
+    models.mkdir()
+    shutil.copyfile(config.MODELS_SEED_DIR / "learning_state.json", models / "learning_state.json")
+    monkeypatch.setattr(config, "MODELS_DIR", models)
+    sink = tmp_path / "events.db"
+    c = db.connect(sink); db.init_schema(c); c.close()
+    monkeypatch.setattr(config, "DB_PATH", sink)
+
+    def boom(*a, **k):
+        raise AssertionError("retrain touched a shop's own data")
+    monkeypatch.setattr(features, "shop_payments_df", boom)
+    monkeypatch.setattr(features, "shop_credit_df", boom)
+    r = learning.retrain_next()
+    assert r["status"] == "retrained" and r["after"]["batches"] == [1, 2]
+    assert "shop_outcomes_used" not in r["after"] and "roc_auc_ci95" in r["after"]
+    assert isinstance(r["after"]["auc_change_within_noise"], bool)

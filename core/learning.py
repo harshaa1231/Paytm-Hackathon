@@ -3,9 +3,9 @@
 1. Matcher: replay 4 synthetic weeks of repayments at a fresh shop. Each week the (simulated) shopkeeper confirms
    the true customer, which adds to vpa_map and match_examples. We measure, from the actual replay, the share of
    repayments auto-resolved and how many would need an LLM call.
-2. Trust model: "Retrain on this week's repayments" adds the next batch of repayment OUTCOMES (more pilot shops
-   reporting back) plus this shop's own closed udhaar, retrains, and shows before/after on the same held-out shops.
-   Learns from repayments only - never from the shopkeeper's yes/no.
+2. Trust model: "Retrain on this week's repayments" adds the next batch of SYNTHETIC repayment outcomes, retrains, and
+   shows before/after on the same held-out shops, with a bootstrap noise band. Learns only from repayments - never from
+   the shopkeeper's yes/no - and a customer's record is never shared with other shops.
 """
 from __future__ import annotations
 
@@ -15,11 +15,9 @@ from datetime import timedelta
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 import config
 from core import db, ledger, matcher, trust_model, world
-from core.features import FEATURES, build, shop_credit_df, shop_payments_df, to_cutoff
 from core.timeutil import iso, parse
 from data import names as N
 
@@ -123,59 +121,41 @@ def load_state() -> dict:
 def init_state() -> None:
     m = json.loads((config.REPORTS_DIR / "metrics.json").read_text())
     st = {"batches": list(m["batches"]), "history": [{"step": 0, "label": "initial model", "batches": m["batches"],
-                                                       "train_rows": m["train_rows"], "roc_auc": m["roc_auc"], "brier": m["brier"],
-                                                       "shop_outcomes_used": 0}]}
+                                                       "train_rows": m["train_rows"], "roc_auc": m["roc_auc"],
+                                                       "roc_auc_ci95": m.get("roc_auc_ci95"), "brier": m["brier"]}]}
     _state_path().write_text(json.dumps(st, indent=1))
-
-
-def shop_outcome_rows(conn, shop_id: str) -> pd.DataFrame:
-    """This shop's real repayment outcomes (closed/written-off udhaar, not voided), with payment features at the
-    time each udhaar was given. Only for customers with a confirmed VPA (behaviour must be attributable)."""
-    rows = conn.execute("SELECT o.udhaar_id, o.repaid_on_time FROM outcomes o JOIN udhaar u ON u.id=o.udhaar_id "
-                        "WHERE u.shop_id=? AND o.voided=0", (shop_id,)).fetchall()
-    if not rows:
-        return pd.DataFrame()
-    labels = {r["udhaar_id"]: r["repaid_on_time"] for r in rows}
-    credit = shop_credit_df(conn, shop_id)
-    pay = shop_payments_df(conn, shop_id)
-    c = credit[credit["udhaar_id"].isin(labels)].dropna(subset=["payer_key"]).drop_duplicates("udhaar_id")
-    out = []
-    hist = credit.dropna(subset=["payer_key"])
-    for r in c.itertuples():
-        X = build(pay[pay["payer_key"] == r.payer_key], to_cutoff(r.given_at), hist[hist["payer_key"] == r.payer_key])
-        if r.payer_key in X.index:
-            row = X.loc[r.payer_key].to_dict()
-            row.update(label=int(labels[r.udhaar_id]), shop_id=shop_id)
-            out.append(row)
-    return pd.DataFrame(out, columns=FEATURES + ["label", "shop_id"])
 
 
 def retrain_next(conn=None, shop_id: str = config.DEMO_SHOP_ID) -> dict:
-    """Add the next batch of repayment outcomes (+ this shop's own), retrain, save, report before/after."""
+    """Add the next batch of SYNTHETIC repayment outcomes, retrain, save, report before/after on the same held-out shops.
+
+    Learns only from repayments. A customer's record is never shared with other shops: no shop's own data is ever
+    added to this shared model (conn/shop_id are only used for the audit log)."""
     st = load_state() or {"batches": [1], "history": []}
     remaining = [b for b in BATCH_ORDER if b not in st["batches"]]
-    new_batches = st["batches"] + remaining[:1]
-    own_conn = conn is None
-    conn = conn or db.connect()
-    try:
-        extra = shop_outcome_rows(conn, shop_id)
-    finally:
-        if own_conn:
-            conn.close()
-    w = world.load_world()
     before = st["history"][-1] if st["history"] else None
-    res = trust_model.train(w, batches=tuple(new_batches), extra_rows=extra)
+    if not remaining:
+        return {"before": before, "after": before, "metrics": None, "status": "no new repayment batches",
+                "history": st["history"]}
+    new_batches = st["batches"] + remaining[:1]
+    res = trust_model.train(world.load_world(), batches=tuple(new_batches))
     trust_model.save(res["model"], res["metrics"], res["threshold"])
-    after = {"step": len(st["history"]), "label": f"+ repayments batch {remaining[0]}" if remaining else "+ this shop's repayments only",
-             "batches": new_batches, "train_rows": res["metrics"]["train_rows"], "roc_auc": res["metrics"]["roc_auc"],
-             "brier": res["metrics"]["brier"], "shop_outcomes_used": int(len(extra)), "threshold": round(res["threshold"], 4)}
+    m = res["metrics"]
+    after = {"step": len(st["history"]), "label": f"+ repayments batch {remaining[0]}", "batches": new_batches,
+             "train_rows": m["train_rows"], "roc_auc": m["roc_auc"], "roc_auc_ci95": m["roc_auc_ci95"],
+             "brier": m["brier"], "threshold": round(res["threshold"], 4)}
+    if before:
+        delta = round(after["roc_auc"] - before["roc_auc"], 4)
+        half = (m["roc_auc_ci95"][1] - m["roc_auc_ci95"][0]) / 2
+        after["auc_change"] = delta
+        after["auc_change_within_noise"] = bool(abs(delta) <= half)
     st["batches"] = new_batches
     st["history"].append(after)
     _state_path().write_text(json.dumps(st, indent=1))
-    db_conn = db.connect()
+    log_conn = db.connect()
     try:
-        db.log_event(db_conn, "trust_retrained", {"before": before, "after": after,
-                                                   "labels": "repayment outcomes only (never shopkeeper yes/no)"}, shop_id)
+        db.log_event(log_conn, "trust_retrained", {"before": before, "after": after,
+                                                    "labels": "repayment outcomes only; no shop's own data is shared"}, shop_id)
     finally:
-        db_conn.close()
-    return {"before": before, "after": after, "metrics": res["metrics"]}
+        log_conn.close()
+    return {"before": before, "after": after, "metrics": m, "status": "retrained", "history": st["history"]}

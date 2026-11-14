@@ -76,9 +76,14 @@ export default function Learning() {
             {busy ? "Retraining…" : "Retrain on this week's repayments"}</button>
         </div>
         <div className="flex items-center gap-2 rounded-xl bg-money-soft text-[#0b6b3d] px-4 py-3 text-[14px] font-medium">
-          <ShieldCheck size={18} /> Learns from repayments only — never from the shopkeeper's yes/no.</div>
+          <ShieldCheck size={18} /> Learns only from repayments; a customer's record is never shared with other shops.</div>
         {err && <p className="text-red-700 text-sm">{err}</p>}
-        {last && (
+        {last?.status === "no new repayment batches" && <p className="text-[14px] text-ink-2">No new repayment batches to learn from. Reset to replay the loop.</p>}
+        {last?.after?.auc_change != null && last.status === "retrained" && (
+          <p className="text-[14px] text-ink-2">AUC change {last.after.auc_change >= 0 ? "+" : ""}{last.after.auc_change}
+            {last.after.auc_change_within_noise ? " is within noise (smaller than half the 95% range across held-out shops)." : " is larger than the noise band."}</p>
+        )}
+        {last && last.status === "retrained" && (
           <div className="grid grid-cols-3 gap-3">
             {[["Training outcomes", "train_rows", 0], ["AUC (same held-out shops)", "roc_auc", 4], ["Brier", "brier", 4]].map(([l, k, d]) => {
               const b = last.before?.[k as string] ?? 0, a = last.after[k as string];
@@ -90,13 +95,15 @@ export default function Learning() {
           </div>
         )}
         <table className="tbl">
-          <thead><tr><th>Step</th><th>What was added</th><th>Training outcomes</th><th>This shop's outcomes</th><th>AUC</th><th>Brier</th></tr></thead>
+          <thead><tr><th>Step</th><th>What was added</th><th>Training outcomes</th><th>AUC</th><th>95% range (held-out shops)</th><th>Change</th><th>Brier</th></tr></thead>
           <tbody>{hist.map((h: any) => (
-            <tr key={h.step}><td>{h.step}</td><td>{h.label}</td><td className="num">{h.train_rows}</td><td className="num">{h.shop_outcomes_used}</td>
-              <td className="num">{h.roc_auc}</td><td className="num">{h.brier}</td></tr>))}</tbody>
+            <tr key={h.step}><td>{h.step}</td><td>{h.label}</td><td className="num">{h.train_rows}</td><td className="num">{h.roc_auc}</td>
+              <td className="num">{h.roc_auc_ci95 ? `${h.roc_auc_ci95[0]} – ${h.roc_auc_ci95[1]}` : "—"}</td>
+              <td className="num">{h.auc_change == null ? "—" : `${h.auc_change >= 0 ? "+" : ""}${h.auc_change}${h.auc_change_within_noise ? " (within noise)" : ""}`}</td>
+              <td className="num">{h.brier}</td></tr>))}</tbody>
         </table>
-        <p className="text-[12.5px] text-ink-3">Each step adds the next batch of repayment outcomes (more pilot shops reporting back) plus this shop's own closed udhaar, then scores the same
-          held-out shops. Reset on the app demo restores the seeded model.</p>
+        <p className="text-[12.5px] text-ink-3">Each step adds the next batch of synthetic repayment outcomes, then scores the same 40 held-out shops. "Within noise" means the change is
+          smaller than half the 95% bootstrap range of the AUC (resampling held-out shops), so it shouldn't be read as better or worse. Reset on the app demo restores the seeded model.</p>
       </section>
     </div>
   );

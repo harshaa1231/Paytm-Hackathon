@@ -85,6 +85,19 @@ def pick_threshold(y: np.ndarray, p: np.ndarray, target: float = config.TRUST_TA
     return {"threshold": float(ps[best - 1]), "precision": float(prec[best - 1]), "selected": best, "target_met": True}
 
 
+def auc_ci_by_shop(y: np.ndarray, p: np.ndarray, shops: np.ndarray, n: int = 300, seed: int = config.SEED) -> list[float]:
+    """95% bootstrap interval of ROC-AUC, resampling held-out SHOPS (the unit of generalisation)."""
+    rng = np.random.default_rng(seed)
+    uniq = np.unique(shops)
+    idx = {s: np.where(shops == s)[0] for s in uniq}
+    aucs = []
+    for _ in range(n):
+        take = np.concatenate([idx[s] for s in rng.choice(uniq, size=len(uniq), replace=True)])
+        if len(np.unique(y[take])) == 2:
+            aucs.append(roc_auc_score(y[take], p[take]))
+    return [round(float(np.percentile(aucs, 2.5)), 4), round(float(np.percentile(aucs, 97.5)), 4)]
+
+
 def training_frame(world: dict) -> pd.DataFrame:
     """One row per customer who actually got credit at the cutoff (historical credit + exploration arm)."""
     cust = world["customers"]
@@ -95,11 +108,9 @@ def training_frame(world: dict) -> pd.DataFrame:
     return df
 
 
-def train(world: dict, batches: tuple[int, ...] = (1,), extra_rows: pd.DataFrame | None = None) -> dict:
+def train(world: dict, batches: tuple[int, ...] = (1,)) -> dict:
     df = training_frame(world)
     tr = df[(df["is_test"] == 0) & (df["batch"].isin(batches))]
-    if extra_rows is not None and not extra_rows.empty:
-        tr = pd.concat([tr, extra_rows], axis=0)
     te = df[df["is_test"] == 1]
 
     # out-of-fold predictions on training shops -> threshold (validation by shop)
@@ -119,10 +130,10 @@ def train(world: dict, batches: tuple[int, ...] = (1,), extra_rows: pd.DataFrame
     metrics = {
         "label": "repaid on time (within 14 days) - repayment outcomes only",
         "train_rows": int(len(tr)), "train_shops": int(tr["shop_id"].nunique()), "batches": list(batches),
-        "extra_rows": int(0 if extra_rows is None else len(extra_rows)),
         "test_rows": int(len(te)), "test_shops": int(te["shop_id"].nunique()),
         "test_prevalence": round(float(y.mean()), 3),
         "roc_auc": round(float(roc_auc_score(y, p)), 4),
+        "roc_auc_ci95": auc_ci_by_shop(y, p, te["shop_id"].values),
         "brier": round(float(brier_score_loss(y, p)), 4),
         "brier_baseline_prevalence": round(float(brier_score_loss(y, np.full_like(p, tr["label"].mean()))), 4),
         "calibration": calibration_table(y, p),

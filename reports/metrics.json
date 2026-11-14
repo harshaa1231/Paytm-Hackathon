@@ -5,11 +5,14 @@
  "batches": [
   1
  ],
- "extra_rows": 0,
  "test_rows": 827,
  "test_shops": 40,
  "test_prevalence": 0.787,
  "roc_auc": 0.6908,
+ "roc_auc_ci95": [
+  0.6399,
+  0.7412
+ ],
  "brier": 0.1562,
  "brier_baseline_prevalence": 0.1676,
  "calibration": [

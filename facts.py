@@ -21,4 +21,12 @@ FACTS = {
     "aidis_2019": "NSO All India Debt & Investment Survey 2019 (NSS 77th round), MoSPI press note 24 Aug 2021: of households' outstanding cash debt, 34% in rural India and 13% in urban India came from non-institutional credit agencies (institutional: 66% rural, 87% urban). Source: https://www.mospi.gov.in/sites/default/files/press_release/press_note-AIDIS-240821.pdf",
 }
 
+# What SCREENS show for the study findings whose exact wording uses "loans" / "lending" / "offer credit". Same facts in
+# product wording; "small credit (up to ₹100)" for the random-borrower finding. Exact study wording: README citations only.
+SCREEN_FACTS = {
+    "in_group_favouritism": "owners were about 42% more likely to give credit to customers from their own social group",
+    "random_borrowers": "customers randomly given small credit (up to ₹100) were no riskier and repaid 3.5 days faster",
+    "owner_lending": "owners' own credit-giving rose from 17% to about 70%",
+}
+
 SYNTHETIC_FOOTER = "Synthetic demo data shaped on Sungu et al. 2026 (published findings only). Not real customers."
