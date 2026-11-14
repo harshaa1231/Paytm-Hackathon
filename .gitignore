@@ -11,3 +11,6 @@ data/train_world.db
 experiments/raw/
 *.parquet
 web/node_modules/
+
+# demo videos (shared separately, not in git)
+recordings/
