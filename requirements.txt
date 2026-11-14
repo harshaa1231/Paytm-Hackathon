@@ -1,0 +1,15 @@
+fastapi==0.162.7
+google-genai==3.3.0
+groq==1.7.0
+httpx==0.28.1
+langgraph==1.2.22
+langgraph-checkpoint==4.3.2
+lightgbm==4.7.0
+numpy==2.4.6
+pandas==3.1.1
+pydantic==2.14.3
+pytest==9.2.0
+python-dotenv==1.2.4
+RapidFuzz==3.14.6
+scikit-learn==1.9.1
+uvicorn==0.54.0

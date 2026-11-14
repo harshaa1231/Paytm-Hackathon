@@ -86,7 +86,7 @@
   },
   "note": "Neither model sees the group. In this synthetic world in-group customers buy slightly bigger baskets (a documented generator choice, unrelated to repayment), so basket size is a proxy a model CAN use to copy group bias."
  },
- "caption": "Trained on the shopkeeper's choices, the model did NOT show a clear group gap in this run (reliable in-group customers recommended 26% vs 29%). Trained on who actually repays, it doesn't (27% vs 27%), but it predicts repayment worse (AUC 0.71 vs 0.72).",
+ "caption": "Among equally reliable customers, the shopkeeper's own choices favour his in-group by +11 points (33% vs 21%); the repayment-trained model's gap is -0.1 points. Trained on the shopkeeper's choices, the model did NOT show a clear group gap in this run (reliable in-group customers recommended 26% vs 29%). Trained on who actually repays, it doesn't (27% vs 27%), but it predicts repayment worse (AUC 0.71 vs 0.72).",
  "summary": {
   "gap_a": -0.0331,
   "gap_b": -0.0015,

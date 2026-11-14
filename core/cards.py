@@ -13,7 +13,8 @@ from core.i18n import t
 from core.money import fmt_inr
 from core.privacy import mask_vpa
 
-PUBLIC_KEYS = ("card_id", "type", "title", "body", "amount_paise", "actions", "note", "subtitle", "lang", "created_at")
+PUBLIC_KEYS = ("card_id", "type", "title", "body", "amount_paise", "actions", "note", "subtitle", "lang", "created_at",
+               "customer_id", "open_paise", "alternatives", "range", "info")
 
 
 def display_upi_name(name: str | None) -> str:

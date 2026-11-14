@@ -62,7 +62,9 @@ def forecast_card(conn: sqlite3.Connection, shop_id: str, lang: str = "en", mode
     facts = {"shop_id": shop_id, "card_type": "coming_back", "allowed_amounts_paise": amounts,
              "allowed_amounts_display": [fmt_inr(a) for a in amounts], "count_facts": {"open_udhaar_entries": fc["n_open"]}}
     v = judge.judge_card(body, facts, try_rephrase=(lang == "en"), shop_id=shop_id, mode=mode)
-    card.update(body=v["text"], template_body=body, judge=v)
+    card.update(body=v["text"], template_body=body, judge=v,
+                range={"total_paise": fc["total_paise"], "low_paise": fc["low_paise"], "high_paise": fc["high_paise"],
+                       "n_open": fc["n_open"]})
     if fc["few"]:
         card["note"] = t("cb_few", lang)
     return card

@@ -10,3 +10,4 @@ data/train_world.db
 # real-data downloads (experiments/download.py fetches them)
 experiments/raw/
 *.parquet
+web/node_modules/

@@ -1,6 +1,0 @@
-[client]
-showErrorDetails = false
-toolbarMode = "minimal"
-
-[theme]
-primaryColor = "#00A86B"

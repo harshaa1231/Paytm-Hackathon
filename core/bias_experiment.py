@@ -115,7 +115,10 @@ def run(world: dict) -> dict:
     ci_b = res["model_b"]["gap_95ci_bootstrap_by_shop"]
     copies = ga > 0.02 and res["model_a"]["gap_95ci_bootstrap_by_shop"][0] > 0
     b_fair = ci_b[0] <= 0 <= ci_b[1] or abs(gb) < 0.02
-    parts = []
+    gs = res["shopkeeper"]["gap_A_minus_B"]
+    parts = [f"Among equally reliable customers, the shopkeeper's own choices favour his in-group by {gs * 100:+.0f} points "
+             f"({res['shopkeeper']['A']['rec_rate']:.0%} vs {res['shopkeeper']['B']['rec_rate']:.0%}); "
+             f"the repayment-trained model's gap is {gb * 100:+.1f} points."]
     parts.append("Trained on the shopkeeper's choices, the model copies his bias" if copies
                  else "Trained on the shopkeeper's choices, the model did NOT show a clear group gap in this run")
     parts.append(f"(reliable in-group customers recommended {res['model_a']['A']['rec_rate']:.0%} vs "

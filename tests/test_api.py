@@ -94,8 +94,38 @@ def test_khata_event(client):
     assert client.post("/v1/events/khata", json=e, headers=H1).json()["status"] == "duplicate"
 
 
-def test_cors_only_streamlit_origin(client):
-    ok = client.options("/health", headers={"Origin": "http://localhost:8501", "Access-Control-Request-Method": "GET"})
+def test_cors_only_dev_origin(client):
+    ok = client.options("/health", headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "GET"})
     bad = client.options("/health", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "GET"})
-    assert ok.headers.get("access-control-allow-origin") == "http://localhost:8501"
+    assert ok.headers.get("access-control-allow-origin") == "http://localhost:5173"
     assert bad.headers.get("access-control-allow-origin") is None
+
+
+def test_demo_console_flow(client):
+    cfg = client.get("/v1/demo/config").json()
+    assert {s["id"] for s in cfg["shops"]} == {"S001", "S002"}
+    st = client.get("/v1/demo/S001/state").json()
+    assert st["owed_total_paise"] == 3_845_000 and st["queue_left"] == 8
+    sim = client.post("/v1/demo/S001/simulate").json()
+    assert sim["status"] == "card_pending" and "@" in sim["payment"]["payer_vpa"] and "******" in sim["payment"]["payer_vpa"]
+    tr = client.get(f"/v1/demo/S001/trace/{sim['payment']['txn_id']}").json()
+    assert tr["graph"]["next"] == ["ask_shopkeeper"] and tr["match"]["stage"] == "llm"
+    client.post("/v1/merchants/S001/decisions", json={"card_id": sim["card"]["card_id"], "action": "clear_full"}, headers=H1)
+    st = client.get("/v1/demo/S001/state").json()
+    assert st["owed_total_paise"] == 3_800_000 and st["undo"]["txn_id"] == sim["payment"]["txn_id"]
+    assert client.post("/v1/demo/S001/undo", json={"txn_id": st["undo"]["txn_id"]}).json()["restored"] == 45_000
+    internals = client.get("/v1/demo/S001/internals").json()
+    assert all("******" in i["payer_vpa"] for i in internals["hidden_regulars"]["items"])
+    assert client.get("/v1/demo/reports").json()["trust"]["roc_auc"] > 0.5
+
+
+def test_demo_routes_can_be_disabled(client, monkeypatch):
+    monkeypatch.setattr(config, "DEMO_ROUTES", False)
+    assert client.get("/v1/demo/config").status_code == 404
+    assert client.post("/v1/demo/reset").status_code == 404
+
+
+def test_demo_admin_closed_needs_key(client, monkeypatch):
+    monkeypatch.setattr(config, "DEMO_OPEN_ADMIN", False)
+    assert client.post("/v1/demo/reset").status_code == 401
+    assert client.post("/v1/demo/reset", headers={"X-Admin-Key": "adm"}).status_code == 200

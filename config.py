@@ -132,7 +132,13 @@ if not SHOP_KEYS:
     SHOP_KEYS = {"S001": "dev-s001", "S002": "dev-s002"}
     STARTUP_WARNINGS.append("SHOP_KEYS not set; using dev keys (dev-s001 / dev-s002). Set them in .env.")
 ADMIN_KEY = os.getenv("ADMIN_KEY", "").strip() or "dev-admin"
-ALLOWED_ORIGINS = ["http://localhost:8501", "http://127.0.0.1:8501"]
-RATE_LIMIT_PER_MIN = 30
+ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]   # Vite dev server; prod is same-origin
+RATE_LIMIT_PER_MIN = 60                   # per key on /v1/events + /v1/merchants (also protects the Groq free quota)
+DEMO_RATE_LIMIT_PER_MIN = 600             # demo console routes (/v1/demo/*)
+# Demo console: exposes the dev shop keys to the bundled web UI and inspection routes for judges.
+# Turn OFF for anything real (production would use Paytm's merchant login).
+DEMO_ROUTES = os.getenv("DEMO_ROUTES", "true").lower() == "true"
+DEMO_OPEN_ADMIN = os.getenv("DEMO_OPEN_ADMIN", "true").lower() == "true"   # false -> reset/retrain need X-Admin-Key
+WEB_DIST = ROOT / "web" / "dist"
 MAX_AMOUNT_PAISE = 10_000_000             # ₹1,00,000 per event: anything larger is rejected
 MAX_NAME_LEN = 80

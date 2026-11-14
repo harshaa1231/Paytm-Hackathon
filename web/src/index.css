@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #f4f6fa;
+}
+html, body, #root { min-height: 100%; }
+body { background: var(--bg); color: #0f172a; -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1, "cv11" 1; }
+
+@layer components {
+  .panel { @apply bg-white rounded-2xl shadow-card border border-slate-200/70; }
+  .panel-pad { @apply p-5 sm:p-6; }
+  .h-eyebrow { @apply text-[11px] font-semibold tracking-[0.12em] uppercase text-ink-3; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition active:scale-[.98] disabled:opacity-40 disabled:pointer-events-none; }
+  .btn-lg { @apply h-12 px-4 text-[15px]; }
+  .btn-md { @apply h-10 px-3.5 text-sm; }
+  .btn-money { @apply bg-money text-white hover:bg-[#0b8a4c]; }
+  .btn-navy { @apply bg-navy text-white hover:bg-navy-2; }
+  .btn-ghost { @apply bg-slate-100 text-ink hover:bg-slate-200; }
+  .btn-link { @apply text-ink-2 hover:text-ink underline-offset-4 hover:underline; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium; }
+  .tbl { @apply w-full text-sm; }
+  .tbl th { @apply text-left font-medium text-ink-3 text-xs uppercase tracking-wide py-2 px-3 border-b border-slate-200; }
+  .tbl td { @apply py-2.5 px-3 border-b border-slate-100 align-top; }
+  .num { font-variant-numeric: tabular-nums; }
+}
+
+/* phone screen scroll area */
+.phone-scroll { scrollbar-width: none; }
+.phone-scroll::-webkit-scrollbar { display: none; }
+
+@keyframes slideUp { from { transform: translateY(14px); opacity: 0 } to { transform: none; opacity: 1 } }
+.anim-in { animation: slideUp .28s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .anim-in { animation: none; } }
