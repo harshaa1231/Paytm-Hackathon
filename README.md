@@ -51,43 +51,55 @@ LangGraph pause/resume keeps paused threads in a long-running process, the ledge
 
 **Tests:** `.venv/bin/python -m pytest` (146 tests, offline, including the full 8-payment demo as one snapshot test).
 
-**LLM modes** (`.env`, see `.env.example`): `DEMO_MODE=replay` (default) uses cached answers and rules and never touches
+**LLM modes** (set in a local `.env` file, which is never committed: `GROQ_API_KEY=`, `GEMINI_API_KEY=`, `DEMO_MODE=replay|live|record`, optional `SHOP_KEYS` and `ADMIN_KEY`): `DEMO_MODE=replay` (default) uses cached answers and rules and never touches
 the network. `live` calls Groq (`openai/gpt-oss-120b`), then Gemini Flash (model ID resolved at runtime from the model
-list), then rules. `record` does the same and saves answers to `cache/llm_cache.json` for replay. To refresh the cache: put your keys in `.env` (never in `.env.example`), then `DEMO_MODE=record .venv/bin/python scripts/record_demo.py`. The committed cache was recorded with Groq; the judge's stage 1 rejects any rephrase that drops an amount or the question, so Groq's Hinglish is shown only on cards where it kept both (in the recorded run: the payment cards).
+list), then rules. `record` does the same and saves answers to `cache/llm_cache.json` for replay. To refresh the cache: put your keys in `.env` (never in a tracked file), then `DEMO_MODE=record .venv/bin/python scripts/record_demo.py`. The committed cache was recorded with Groq; the judge's stage 1 rejects any rephrase that drops an amount or the question, so Groq's Hinglish is shown only on cards where it kept both (in the recorded run: the payment cards).
 
 ---
 
 ## How it works
 
 ```mermaid
-flowchart LR
-  subgraph Paytm["Existing Paytm systems"]
-    QR["UPI payment into shop QR"]
+flowchart TB
+  subgraph PAYTM["Existing Paytm systems"]
+    QR["UPI payment into the shop's QR"]
     BK["Business Khata entries"]
-    APP["Business Khata tab (app)"]
   end
-  subgraph PK["PakkaKhata service (FastAPI)"]
-    EV["POST /v1/events/payment<br/>POST /v1/events/khata"]
-    G["LangGraph: ingest → match → card → judge → ask (interrupt) → apply → learn"]
-    M["Matcher: VPA memory → RapidFuzz → LLM (ambiguous only)"]
-    T["Trust model (LightGBM, repayments only)"]
-    F["Forecast: p7 per udhaar + Monte Carlo range"]
-    J["Judge: deterministic checks + LLM judge"]
-    DB[("SQLite ledger")]
-    CARDS["GET /v1/merchants/{mid}/cards<br/>POST /v1/merchants/{mid}/decisions"]
+  subgraph SVC["PakkaKhata service: FastAPI, one Docker image"]
+    EV["Events in<br/>POST /v1/events/payment<br/>POST /v1/events/khata"]
+    subgraph FLOW["LangGraph payment flow"]
+      I["ingest, idempotent on txn_id"] --> MA["match: VPA memory, then RapidFuzz,<br/>then LLM only if ambiguous"]
+      MA --> C["build card"] --> J["judge: stage 1 rules, stage 2 LLM"]
+      J --> ASK["ask shopkeeper: interrupt()"] --> AP["apply decision"] --> L["learn: VPA memory + examples"]
+    end
+    LLM["LLM gateway<br/>Groq, then Gemini, then rules<br/>record / replay cache"]
+    DB[("SQLite khata ledger")]
+    CON{"DPDP consent<br/>for this shop?"}
+    T["Trust model, LightGBM<br/>this shop's payments only<br/>trained on repayments only"]
+    F["Forecast: p7 per udhaar<br/>+ Monte Carlo range"]
+    OUT["Cards out<br/>GET /v1/merchants/:mid/cards<br/>POST /v1/merchants/:mid/decisions"]
+  end
+  subgraph APP["App: Business Khata tab (concept, React)"]
+    UI["PakkaKhata cards"]
   end
   QR --> EV
   BK --> EV
-  EV --> G
-  G --> M
-  G --> J
-  T --> CARDS
-  F --> CARDS
-  G --> DB
-  CARDS --> APP
-  APP -- "shopkeeper taps" --> CARDS
+  EV --> I
+  MA -.-> LLM
+  J -.-> LLM
+  AP -->|"only after the tap"| DB
+  DB --> CON
+  CON -->|"yes"| T
+  T --> OUT
+  DB --> F
+  F --> OUT
+  ASK --> OUT
+  OUT --> UI
+  UI -->|"shopkeeper taps"| OUT
+  OUT -->|"resume"| AP
 ```
 
+- **Nothing moves money and nothing messages customers.** No payments, no payment or collect requests; the only writes are khata entries after the shopkeeper taps.
 - **Events in, cards out.** The web app's phone screen renders `GET /v1/merchants/{mid}/cards`, the same endpoint Paytm's app team would call. Each response is under 5 KB.
 - **The LLM never writes to the ledger.** It proposes; deterministic code validates (the answer must be one of the supplied candidate ids); the shopkeeper confirms; only then does the ledger change (`apply_decision`, after LangGraph resumes).
 - **Money is integer paise.** ₹ with Indian lakh grouping only at the edge (`core/money.py`, `web/src/lib.ts`).
