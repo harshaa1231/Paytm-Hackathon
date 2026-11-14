@@ -1,0 +1,41 @@
+{
+ "dataset": "UCI Online Retail II (real UK retail invoices)",
+ "label": "repeat_purchase_90d (bought again within 90 days) - NOT repayment",
+ "cutoff": "2011-06-01",
+ "features": [
+  "n_pay_90d",
+  "active_weeks_share",
+  "gap_std_days",
+  "recency_days",
+  "tenure_days",
+  "median_ticket_paise",
+  "max_gap_days"
+ ],
+ "units": "pence (GBP minor units); never converted",
+ "split": "by customer, 75/25, seed 42",
+ "n_customers_train": 3700,
+ "n_customers_test": 1233,
+ "prevalence": 0.3252,
+ "model": {
+  "roc_auc": 0.8035,
+  "pr_auc": 0.7082,
+  "brier": 0.1616
+ },
+ "baseline_recency": {
+  "roc_auc": 0.7607,
+  "pr_auc": 0.602,
+  "brier": 0.1808
+ },
+ "time_check": {
+  "trained_at_cutoff": "2011-03-01",
+  "scored_at_cutoff": "2011-06-01",
+  "roc_auc": 0.7902,
+  "pr_auc": 0.7061,
+  "brier": 0.1618
+ },
+ "limitations": [
+  "Online gift-ware retailer in the UK, many wholesale buyers: not a kirana.",
+  "Label is repeat purchase, not repayment: it validates that behaviour features carry signal, nothing more.",
+  "Invoice times treated as UTC; only day-level gaps matter for these features."
+ ]
+}

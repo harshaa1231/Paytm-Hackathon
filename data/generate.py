@@ -421,11 +421,14 @@ def snapshot_seed():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-train", action="store_true")
+    ap.add_argument("--world-only", action="store_true", help="only (re)build data/train_world.db (Docker image build)")
     ap.add_argument("--seed", type=int, default=config.SEED)
     args = ap.parse_args()
     import os
     os.environ.setdefault("PAKKA_FAKE_NOW", config.DEMO_NOW)
     make_training_world(args.seed)
+    if args.world_only:
+        return
     make_demo_db(seed=args.seed)
     if not args.no_train:
         from core import train_all

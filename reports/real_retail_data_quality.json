@@ -1,0 +1,8 @@
+{
+ "rows_raw": 1067371,
+ "after_drop_missing_customer": 824364,
+ "after_drop_cancellations": 805620,
+ "after_drop_nonpositive_qty_or_price": 805549,
+ "invoices": 36969,
+ "customers": 5878
+}

@@ -1,0 +1,53 @@
+{
+ "uci_online_retail_ii": {
+  "source_url": "https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip",
+  "page": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+  "access_date": "2026-11-14",
+  "licence_seen": "CC BY 4.0 (verified on the UCI dataset page, 2026-11-14)",
+  "files": {
+   "online_retail_II.xlsx": {
+    "sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+    "bytes": 45622278
+   },
+   "online_retail_ii.zip": {
+    "sha256": "572e36277c2390fbfde10664750731e0a86f55e33470d91919085f0408e67bfb",
+    "bytes": 45622418
+   }
+  },
+  "citation": "Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+  "rows_before_cleaning": 1067371,
+  "invoices_after_cleaning": 36969,
+  "currency_units": "GBP pence",
+  "split": "by customer, 75/25, seed 42",
+  "limitations": [
+   "Online gift-ware retailer in the UK, many wholesale buyers: not a kirana.",
+   "Label is repeat purchase, not repayment: it validates that behaviour features carry signal, nothing more.",
+   "Invoice times treated as UTC; only day-level gaps matter for these features."
+  ]
+ },
+ "uci_default_credit_card_taiwan": {
+  "source_url": "https://archive.ics.uci.edu/static/public/350/default+of+credit+card+clients.zip",
+  "page": "https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients",
+  "access_date": "2026-11-14",
+  "licence_seen": "CC BY 4.0 (verified on the UCI dataset page, 2026-11-14)",
+  "files": {
+   "default of credit card clients.xls": {
+    "sha256": "30c6be3abd8dcfd3e6096c828bad8c2f011238620f5369220bd60cfc82700933",
+    "bytes": 5539328
+   },
+   "default_of_credit_card_clients.zip": {
+    "sha256": "56c885f84457f6680f8438f02bfcdac9579323d8a94465ee5f26e32baa727602",
+    "bytes": 5539494
+   }
+  },
+  "citation": "Yeh, I. (2009). Default of Credit Card Clients [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C55S3H",
+  "rows_before_cleaning": 30000,
+  "rows_after_cleaning": 30000,
+  "currency_units": "NT$ (as in source)",
+  "split": "by client, 70/30, seed 42",
+  "limitations": [
+   "Taiwan credit cards, 2005: not kirana udhaar.",
+   "No shopkeeper decisions: checks the audit, not Model A vs B."
+  ]
+ }
+}
