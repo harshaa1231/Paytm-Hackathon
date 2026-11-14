@@ -17,6 +17,16 @@ Built for the Paytm Build for India AI Hackathon (Track 1, Merchant Growth AI).
 
 ---
 
+## Evidence (India first)
+
+- **Problem:** a 2026 field study in 26 Mumbai kiranas (Sungu, Alhorr & Srivastava) found that about half of owners keep no written records and spend about 8 hours a week chasing repayments.
+- **Scale:** NSO All India Debt & Investment Survey 2019 (NSS 77th round), [MoSPI press note, 24 Aug 2021](https://www.mospi.gov.in/sites/default/files/press_release/press_note-AIDIS-240821.pdf): of households' outstanding cash debt, 34% in rural India and 13% in urban India came from non-institutional credit agencies (institutional: 66% rural, 87% urban). The press note doesn't break this down by shopkeepers.
+- **Compliance:** DPDP consent (only customers who agreed to share their payment record with that shop are scored or suggested); no money movement (no payments, no payment or collect requests, no messages to customers; the only write is a khata entry after the shopkeeper taps); per-shop scoring (each shop's scores use only its own payments and are shown only to that shop). Checked by tests in `tests/test_compliance.py` and `tests/test_recommend.py`.
+- **Names:** tested on 60 hand-written Indian name pairs (transliteration, v↔b, initials, reordering, honorifics, descriptors, blank UPI names, hard negatives): precision at auto-match 97.1%, false-match rate 5% (1 of 20 different-person pairs). Different people with near-identical names in one shop never auto-matched. Variation types from IDinsight's work on Hindi name matching; their code was not copied.
+- **Honest limit:** No open Indian customer-level transaction or credit dataset exists; the next step is a consented pilot on Paytm merchants.
+
+---
+
 ## Run it
 
 **Docker (recommended, works offline):**
@@ -130,10 +140,11 @@ held-out shop-weeks, so it is conservative.
 **Matcher learning loop** (`reports/learning_matcher.json`): over 4 replayed weeks, VPA-memory resolutions went 0 → 10 → 28 → 28
 and auto-resolved repayments went 60% → 58% → 76% → 74%, with zero wrong customers proposed.
 
-**Real public data** (validation layer, `experiments/`; these are *not* kirana repayments):
-- *UCI Online Retail II* (1,067,371 real UK invoice lines, CC BY 4.0). With our behaviour features, predicting "buys again within 90 days" gives ROC-AUC **0.80 vs 0.76** for recency alone (PR-AUC 0.71 vs 0.60). Trained at an earlier cutoff and scored later: 0.79.
-- *UCI Default of Credit Card Clients* (Taiwan 2005, 30,000 clients, CC BY 4.0). Fairness audit with sex and age as audit-only groups: equal-opportunity difference **1.3 pts by sex, 6.2 pts by age band** (AUC 0.78). This checks the audit method; it has no shopkeeper decisions, so it doesn't replicate Model A vs B.
-- *62 labelled Indian name cases* (synthetic; variation types from IDinsight's documented issues). Auto-match precision **97.7%**, false-match rate 1.6% (one case: "DURGA PRASAD" vs "Durga amma", which names alone can't separate; the shopkeeper's tap catches it).
+**Indian name matching** (first validation task, `reports/matcher_metrics.json`): 60 labelled pairs, precision at auto-match **97.1%**, false-match rate **5%** (the one false match is "DURGA PRASAD" vs "Durga amma", which names alone can't separate; the shopkeeper's tap catches it), recall 85%. A second set of 62 shop-level cases checks that different people with near-identical names stay ambiguous: none auto-matched.
+
+**Foreign method checks** (`experiments/`; not Indian data, not kirana repayments):
+- *UCI Online Retail II*: UK retail data, used only to sanity-check the feature method; not Indian, not repayment data. With our behaviour features, "buys again within 90 days" gives ROC-AUC 0.80 vs 0.76 for recency alone (PR-AUC 0.71 vs 0.60); trained at an earlier cutoff and scored later, 0.79. CC BY 4.0.
+- *UCI Default of Credit Card Clients*: Taiwan credit-card data (2005), used only to check the fairness-audit method; not Indian. Equal-opportunity difference 1.3 pts by sex, 6.2 pts by age band (AUC 0.78). It has no shopkeeper decisions, so it doesn't replicate Model A vs B. CC BY 4.0.
 
 Run them with `pip install -r requirements-validation.txt && python experiments/download.py && python experiments/real_retail.py && python experiments/fairness_external.py && python experiments/matcher_eval.py`.
 Licences and SHA-256 checksums are in `reports/dataset_manifest.json`. Raw files aren't committed.

@@ -21,8 +21,9 @@ Optional extras if asked: the remaining queue items show Sunita/Suneeta (partial
 ## Numbers to have ready
 - Trust model: held-out AUC 0.69 vs oracle ceiling 0.77. Threshold picked for ~90% precision on validation shops. On test shops, 83% of selected people with no credit history repaid on time (base 71%).
 - Forecast: the 80% range covered the real total in 96% of 612 held-out shop-weeks (conservative).
-- Matcher replay: 0 wrong customers proposed over 4 weeks; VPA memory takes over by week 3. 62 labelled name cases: 97.7% precision.
-- Real data: retail features AUC 0.80 vs 0.76 for recency alone (not repayment). Taiwan credit fairness audit: equal-opportunity gap 1.3 pts by sex, 6.2 by age band.
+- Matcher replay: 0 wrong customers proposed over 4 weeks; VPA memory takes over by week 3. 60 labelled Indian name pairs: 97.1% precision at auto-match, 5% false-match rate; near-identical names in one shop never auto-matched.
+- Scale (India): AIDIS 2019 — 34% (rural) and 13% (urban) of households' outstanding cash debt is from non-institutional agencies. Never call this "shopkeeper credit".
+- Foreign method checks only: UK retail data (feature method sanity check, not Indian, not repayment) AUC 0.80 vs 0.76; Taiwan credit data (audit method only).
 - **Retrain button:** in the seeded run, adding batch 2 moved held-out AUC 0.691 → 0.688. That's noise-level, so say so if it happens on stage: "with 40 held-out shops this is within noise; what matters is it never learns from his yes/no."
 
 ## Judge Q&A (short answers)

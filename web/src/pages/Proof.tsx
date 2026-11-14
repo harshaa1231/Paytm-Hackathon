@@ -48,6 +48,28 @@ export default function Proof() {
         <p className="text-ink-2 text-[14px] mt-1 max-w-3xl">Every number here comes from a real run on seeded synthetic data (files in <code>reports/</code>). Nothing is rounded up or picked.</p>
       </div>
 
+      <section className="panel panel-pad space-y-4">
+        <h2 className="text-[19px] font-bold tracking-tight">Evidence <span className="text-ink-3 font-medium text-[14px] ml-1">India first</span></h2>
+        <ol className="grid md:grid-cols-2 gap-3">
+          {[
+            ["Problem", <>2026 field study in 26 Mumbai kiranas (Sungu, Alhorr &amp; Srivastava): {r.facts.no_records}; {r.facts.hours_chasing}.</>],
+            ["Scale", <>{r.facts.aidis_2019.split(" Source: ")[0]} <span className="text-ink-3">These shares are not broken down by shopkeepers.</span>{" "}
+              <a className="text-sky underline" href={r.facts.aidis_2019.split(" Source: ")[1]} target="_blank" rel="noreferrer">MoSPI press note</a></>],
+            ["Compliance", <>DPDP consent: only customers who agreed to share their payment record with that shop are scored or suggested. No money moves: no payments,
+              no payment or collect requests, no messages to customers; the only write is a khata entry after the shopkeeper taps. Per-shop scoring: each shop's
+              scores use only its own payments and are shown only to that shop. All checked by automated tests.</>],
+            ["Names", r.matcher_metrics?.part_a_labelled_pairs ? <>Tested on {r.matcher_metrics.part_a_labelled_pairs.n_pairs} hand-written Indian name pairs
+              (transliteration, v↔b, initials, reordering, honorifics, descriptors, blank names, hard negatives): precision at auto-match{" "}
+              {pct(r.matcher_metrics.part_a_labelled_pairs.precision_at_auto_match, 1)}, false-match rate {pct(r.matcher_metrics.part_a_labelled_pairs.false_match_rate, 1)}.
+              Different people with near-identical names in one shop never auto-matched. Variation types from IDinsight's work on Hindi name matching.</> : <>Run experiments/matcher_eval.py.</>],
+          ].map(([h, body], i) => (
+            <li key={i} className="rounded-xl bg-slate-50 px-4 py-3"><div className="h-eyebrow mb-1">{h as string}</div><div className="text-[14px] text-ink-2 leading-relaxed">{body}</div></li>
+          ))}
+        </ol>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[14px] text-[#7a4b00]"><b>Honest limit:</b> No open Indian customer-level transaction or credit
+          dataset exists; the next step is a consented pilot on Paytm merchants.</div>
+      </section>
+
       {be && (
         <Block n={1} title="Trained on the shopkeeper's choices vs trained on repayments">
           <div className="rounded-xl bg-sky-soft text-[#123b6d] px-4 py-3 text-[14.5px] leading-relaxed">{be.caption}</div>
@@ -153,21 +175,20 @@ export default function Proof() {
         </Block>
       )}
 
-      {(r.real_retail || r.fairness_external || r.matcher_metrics) && (
-        <Block n={4} title="Checks on real public data">
-          <p className="text-[13px] text-ink-2">The kirana demo is synthetic. Separately, each method was checked on real public data. These are <b>not</b> kirana repayments.</p>
-          {r.real_retail && <p className="text-[14px]"><b>Behaviour features on UCI Online Retail II</b> (real UK retail invoices; label = buys again within 90 days, not repayment):
+      {(r.real_retail || r.fairness_external) && (
+        <Block n={4} title="Foreign method checks (not Indian data)">
+          <p className="text-[13px] text-ink-2">These only check that a method works. They are <b>not</b> Indian data and <b>not</b> kirana repayments.</p>
+          {r.real_retail && <p className="text-[14px]"><b>UCI Online Retail II.</b> UK retail data, used only to sanity-check the feature method; not Indian, not repayment data.
+            Label = buys again within 90 days:
             ROC-AUC {r.real_retail.model.roc_auc} vs recency-only baseline {r.real_retail.baseline_recency.roc_auc}; PR-AUC {r.real_retail.model.pr_auc};
             Brier {r.real_retail.model.brier}; {r.real_retail.n_customers_test} test customers, split by customer.</p>}
-          {r.fairness_external && <p className="text-[14px]"><b>Fairness audit on UCI Default of Credit Card Clients</b> (real, Taiwan 2005; sex and age used only as audit groups):
+          {r.fairness_external && <p className="text-[14px]"><b>UCI Default of Credit Card Clients.</b> Taiwan credit-card data (2005), used only to check the fairness-audit method; not Indian. Sex and age are audit groups only:
             equal-opportunity difference by sex {r.fairness_external.by_sex.equal_opportunity_difference}, by age band {r.fairness_external.by_age.equal_opportunity_difference}
             {" "}(AUC {r.fairness_external.roc_auc}). This checks the audit method; it has no shopkeeper decisions, so it doesn't replicate the Model A vs B experiment.</p>}
-          {r.matcher_metrics && <p className="text-[14px]"><b>Name matcher on {r.matcher_metrics.n_pairs} labelled name pairs</b> (documented Indian spelling variation, incl. hard negatives):
-            precision at auto-match {r.matcher_metrics.precision_auto}, false-match rate {r.matcher_metrics.false_match_rate}, recall {r.matcher_metrics.recall_auto}.</p>}
         </Block>
       )}
 
-      <Block n={(r.real_retail || r.fairness_external || r.matcher_metrics) ? 5 : 4} title="What the field study found (context, not our data)">
+      <Block n={(r.real_retail || r.fairness_external) ? 5 : 4} title="What the field study found (context, not our data)">
         <ul className="list-disc pl-5 space-y-1.5 text-[14px] text-ink-2">
           {["in_group_favouritism", "random_borrowers", "revisits", "owner_lending", "credit_customers_share_of_revenue", "hours_chasing"].map((k) => <li key={k}>{r.facts[k]}</li>)}
         </ul>
