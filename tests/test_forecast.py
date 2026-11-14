@@ -25,3 +25,18 @@ def test_shared_shock_widens_range():
 def test_shop_with_no_open_udhaar(conn):
     out = forecast.shop_forecast(conn, "S1", "2026-11-14T09:30:00+05:30")
     assert out["status"] == "nothing" and out["expected_paise"] == 0
+
+
+
+def test_one_open_udhaar(conn):
+    import pytest
+    import config
+    from core import ledger
+    if not (config.MODELS_DIR / forecast.MODEL_FILE).exists():
+        pytest.skip("models not trained")
+    cid = ledger.add_customer(conn, "S1", "Ramesh")
+    ledger.add_udhaar(conn, "S1", cid, 45_000, given_at="2026-11-10T10:00:00+05:30")
+    out = forecast.shop_forecast(conn, "S1", "2026-11-14T09:30:00+05:30")
+    assert out["status"] == "ok" and out["n_open"] == 1 and out["few"] is True and out["total_paise"] == 45_000
+    assert 0 <= out["low_paise"] <= out["expected_paise"] <= out["high_paise"] <= 45_000
+    assert {out["low_paise"], out["high_paise"]} <= {0, 45_000}     # one udhaar: either it comes back or it doesn't

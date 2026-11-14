@@ -80,3 +80,10 @@ def test_token_budget(monkeypatch):
 def test_unknown_task_rejected():
     with pytest.raises(ValueError):
         llm.call("write_ledger", "p", MatchAnswer)
+
+
+def test_groq_ok_never_calls_gemini(monkeypatch):
+    monkeypatch.setattr(llm, "_call_groq", lambda p: '{"candidate_id": "C1", "confidence": 0.9, "reason": "ok"}')
+    monkeypatch.setattr(llm, "_call_gemini", lambda p: (_ for _ in ()).throw(AssertionError("gemini called")))
+    res, meta = llm.call("match_name", "p-ok", MatchAnswer, fallback=rules, mode="live")
+    assert meta["provider"] == "groq" and meta["error"] is None and res.candidate_id == "C1"

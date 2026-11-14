@@ -58,7 +58,7 @@ def test_duplicate_event_idempotent(client):
 
 def test_auth_and_scoping(client):
     assert client.get("/v1/merchants/S001/cards").status_code == 401
-    assert client.get("/v1/merchants/S001/cards", headers={"X-Shop-Key": "k2"}).status_code == 401   # S002's key
+    assert client.get("/v1/merchants/S001/cards", headers={"X-Shop-Key": "k2"}).status_code == 403   # S002's key
     assert client.get("/v1/merchants/S999/cards", headers=H1).status_code == 403                     # not in pilot
     client.post("/v1/events/payment", json=RAMESH, headers=H1)
     # shop S002 can't see or decide S001's card
@@ -140,3 +140,35 @@ def test_demo_today_and_khata(client):
     assert client.get("/v1/demo/S001/today").json()["payments"][0]["status"] == "udhaar_cleared"
     k = client.get("/v1/demo/S001/khata").json()
     assert k["total_paise"] == 3_800_000 and len(k["customers"]) == 19
+
+
+def test_missing_key_401_wrong_key_403(client):
+    assert client.get("/v1/merchants/S001/cards").status_code == 401
+    assert client.get("/v1/merchants/S001/cards", headers={"X-Shop-Key": "nope"}).status_code == 403
+    assert client.post("/v1/merchants/S001/decisions", json={"card_id": "pay:UPI-T-1", "action": "clear_full"}).status_code == 401
+
+
+def _dump(path):
+    import sqlite3
+    c = sqlite3.connect(path)
+    tables = [r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
+    out = {t: sorted(map(repr, c.execute(f"SELECT * FROM {t}").fetchall())) for t in tables}
+    c.close()
+    return out
+
+
+def test_reset_restores_exact_seeded_state(client):
+    sim = client.post("/v1/demo/S001/simulate").json()
+    client.post("/v1/merchants/S001/decisions", json={"card_id": sim["card"]["card_id"], "action": "clear_full"}, headers=H1)
+    assert _dump(config.DB_PATH) != _dump(config.DB_SEED_PATH)
+    assert client.post("/v1/demo/reset").status_code == 200
+    assert _dump(config.DB_PATH) == _dump(config.DB_SEED_PATH)
+
+
+def test_today_respects_ist_midnight(client):
+    base = {**RAMESH, "payer_name": "VENKAT S", "payer_vpa": "venkat.s@okicici", "amount_paise": 12000}
+    client.post("/v1/events/payment", json={**base, "txn_id": "UPI-MID-1", "ts": "2026-11-13T23:59:59+05:30"}, headers=H1)
+    client.post("/v1/events/payment", json={**base, "txn_id": "UPI-MID-2", "ts": "2026-11-14T00:00:00+05:30"}, headers=H1)
+    client.post("/v1/events/payment", json={**base, "txn_id": "UPI-MID-3", "ts": "2026-11-13T18:30:00Z"}, headers=H1)  # = 00:00 IST
+    ids = {p["txn_id"] for p in client.get("/v1/demo/S001/today").json()["payments"]}
+    assert "UPI-MID-1" not in ids and {"UPI-MID-2", "UPI-MID-3"} <= ids

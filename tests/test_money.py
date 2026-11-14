@@ -31,3 +31,14 @@ def test_rupees_to_paise_rejects_float():
 def test_round_for_display():
     assert round_to_hundred_rupees(2_387_100) == 2_390_000
     assert round_to_hundred_rupees(2_384_999) == 2_380_000
+
+
+
+def test_i18n_falls_back_to_english_per_key(monkeypatch):
+    from core import i18n
+    fake = {"en": {"btn_purchase": "Just a purchase", "btn_no": "No"}, "hi": {"btn_no": "नहीं"}}
+    monkeypatch.setattr(i18n, "_strings", lambda: fake)
+    assert i18n.t("btn_no", "hi") == "नहीं"                    # reviewed string used
+    assert i18n.t("btn_purchase", "hi") == "Just a purchase"    # unreviewed key falls back to English
+    assert i18n.t("btn_purchase", "te") == "Just a purchase"    # language with no strings at all
+    assert i18n.coverage("hi") == (1, 2)

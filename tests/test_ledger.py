@@ -96,3 +96,27 @@ def test_amounts_must_be_positive_int(conn):
         ledger.add_udhaar(conn, "S1", cid, 0)
     with pytest.raises(ledger.LedgerError):
         ledger.add_udhaar(conn, "S1", cid, 100.0)
+
+
+
+def test_double_undo_is_a_no_op(conn):
+    cid, (u1,) = setup_customer(conn, [45_000])
+    pay(conn, "T1", 45_000)
+    ledger.apply_payment(conn, "S1", cid, "T1")
+    assert ledger.undo_payment(conn, "S1", "T1")["restored"] == 45_000
+    assert ledger.undo_payment(conn, "S1", "T1") == {"status": "nothing_to_undo", "restored": 0}
+    assert ledger.remaining(conn, u1) == 45_000
+    assert [r[0] for r in conn.execute("SELECT kind FROM allocations WHERE txn_id='T1' ORDER BY id")] == ["clear", "reversal"]
+
+
+def test_ist_midnight_boundary():
+    from core.timeutil import normalize_ts
+    assert normalize_ts("2026-11-13T18:30:00Z") == "2026-11-14T00:00:00+05:30"
+    assert normalize_ts("2026-11-13T18:29:59+00:00") == "2026-11-13T23:59:59+05:30"
+
+
+def test_udhaar_given_at_same_instant_is_eligible(conn):
+    cid = ledger.add_customer(conn, "S1", "Ramesh")
+    u = ledger.add_udhaar(conn, "S1", cid, 10_000, given_at="2026-11-14T00:00:00+05:30")
+    pay(conn, "T1", 10_000, ts="2026-11-13T18:30:00Z")        # same instant, written in UTC
+    assert ledger.apply_payment(conn, "S1", cid, "T1")["applied"] == 10_000 and ledger.remaining(conn, u) == 0

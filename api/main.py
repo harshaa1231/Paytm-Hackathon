@@ -80,9 +80,11 @@ async def guard(request: Request, call_next):
 def merchant_auth(mid: str, key: str | None) -> None:
     if mid not in config.ENABLED_MERCHANTS:
         raise HTTPException(403, "PakkaKhata is not enabled for this merchant (pilot list only)")
+    if not key:
+        raise HTTPException(401, "missing X-Shop-Key")
     expected = config.SHOP_KEYS.get(mid)
     if not expected or key != expected:
-        raise HTTPException(401, "missing or wrong X-Shop-Key for this merchant")
+        raise HTTPException(403, "this X-Shop-Key is not valid for this merchant")
 
 
 def admin_auth(x_admin_key: str | None = Header(default=None)) -> None:

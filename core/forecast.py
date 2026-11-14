@@ -171,9 +171,10 @@ def shop_forecast(conn: sqlite3.Connection, shop_id: str, as_of: str) -> dict:
              for r, p in zip(rows.itertuples(), p7)]
     items.sort(key=lambda x: -x["p7"] * x["amount_paise"])
     total = int(rows["amount_paise"].sum())
+    cap = lambda v: min(total, max(0, round_to_hundred_rupees(v)))   # noqa: E731  (rounding must never exceed what is owed)
     return {"status": "ok", "total_paise": total,
-            "expected_paise": round_to_hundred_rupees(sim["expected"]),
-            "low_paise": round_to_hundred_rupees(sim["p10"]), "high_paise": round_to_hundred_rupees(sim["p90"]),
+            "expected_paise": cap(sim["expected"]),
+            "low_paise": cap(sim["p10"]), "high_paise": cap(sim["p90"]),
             "expected_exact_paise": int(round(sim["expected"])), "n_open": len(items),
             "few": len(items) < config.FORECAST_FEW_ENTRIES, "items": items,
             "mc": {"draws": config.MC_DRAWS, "shock_sd": config.MC_SHOCK_SD, "seed": config.SEED}}

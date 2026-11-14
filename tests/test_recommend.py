@@ -106,3 +106,12 @@ def test_consent_is_per_shop(shop):
     weekly(shop, "lakshmi@ybl", "LAKSHMI N", 26, shop="S2", start=700)     # consented at S1 only
     assert recommend.consented_vpas(shop, "S2") == set()
     assert recommend.scored_payers(shop, "S2", NOW).empty
+
+
+
+def test_consent_withdrawn_removes_card_and_stops_scoring(shop):
+    assert [c["title"] for c in service.trust_cards(shop, "S1", mode="replay")] == ["Lakshmi N pays you regularly"]
+    shop.execute("UPDATE consents SET consent=0 WHERE shop_id='S1' AND payer_vpa='lakshmi@ybl'")
+    shop.commit()
+    assert service.trust_cards(shop, "S1", mode="replay") == []
+    assert "lakshmi@ybl" not in recommend.scored_payers(shop, "S1", NOW).index      # not even scored

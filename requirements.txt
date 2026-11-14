@@ -13,3 +13,4 @@ python-dotenv==1.2.4
 RapidFuzz==3.14.6
 scikit-learn==1.9.1
 uvicorn==0.54.0
+hypothesis==6.122.3
