@@ -15,9 +15,18 @@ def payment(name, amount, vpa="9849012345@ybl", shop="S1"):
 
 def test_confident_match(conn):
     s = mk(conn, "Suneeta tailor", 80_000)
-    mk(conn, "Geeta dudh wala", 30_000)
+    mk(conn, "Geeta dudh wala", 55_000)
     m = matcher.find_candidates(conn, "S1", payment("SUNITA DEVI", 30_000))
     assert m["stage"] == "fuzzy_confident" and m["customer_id"] == s
+
+
+def test_name_vs_amount_conflict_is_not_auto_proposed(conn):
+    """Family member named like customer X pays exactly customer Y's udhaar -> ask, don't auto-propose X."""
+    mk(conn, "Suneeta tailor", 80_000)
+    g = mk(conn, "Geeta dudh wala", 30_000)
+    m = matcher.find_candidates(conn, "S1", payment("SUNITA DEVI", 30_000), use_llm=False)
+    assert m["stage"] == "ambiguous" and m["customer_id"] is None
+    assert g in [c["customer_id"] for c in m["candidates"]]          # the amount rival is offered as a choice
 
 
 def test_no_open_udhaar_is_purchase(conn):

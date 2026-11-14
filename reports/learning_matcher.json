@@ -1,0 +1,71 @@
+{
+ "weeks": [
+  {
+   "week": 1,
+   "repayments": 35,
+   "auto_resolved": 21,
+   "auto_correct": 21,
+   "false_auto": 0,
+   "needs_llm": 9,
+   "asked_pick": 3,
+   "missed": 2,
+   "vpa_memory": 0,
+   "fuzzy_confident": 21,
+   "auto_resolved_share": 0.6,
+   "needs_llm_share": 0.257,
+   "false_auto_share": 0.0,
+   "vpa_map_size": 35
+  },
+  {
+   "week": 2,
+   "repayments": 38,
+   "auto_resolved": 22,
+   "auto_correct": 22,
+   "false_auto": 0,
+   "needs_llm": 13,
+   "asked_pick": 3,
+   "missed": 0,
+   "vpa_memory": 10,
+   "fuzzy_confident": 12,
+   "auto_resolved_share": 0.579,
+   "needs_llm_share": 0.342,
+   "false_auto_share": 0.0,
+   "vpa_map_size": 63
+  },
+  {
+   "week": 3,
+   "repayments": 42,
+   "auto_resolved": 32,
+   "auto_correct": 32,
+   "false_auto": 0,
+   "needs_llm": 10,
+   "asked_pick": 0,
+   "missed": 0,
+   "vpa_memory": 28,
+   "fuzzy_confident": 4,
+   "auto_resolved_share": 0.762,
+   "needs_llm_share": 0.238,
+   "false_auto_share": 0.0,
+   "vpa_map_size": 77
+  },
+  {
+   "week": 4,
+   "repayments": 43,
+   "auto_resolved": 32,
+   "auto_correct": 32,
+   "false_auto": 0,
+   "needs_llm": 9,
+   "asked_pick": 0,
+   "missed": 2,
+   "vpa_memory": 28,
+   "fuzzy_confident": 4,
+   "auto_resolved_share": 0.744,
+   "needs_llm_share": 0.209,
+   "false_auto_share": 0.0,
+   "vpa_map_size": 92
+  }
+ ],
+ "customers": 80,
+ "seed": 42,
+ "note": "From an actual replay: synthetic names with documented Indian spelling variation; the simulated shopkeeper confirms the true customer each week. LLM not called; 'needs LLM' counts ambiguous cases."
+}

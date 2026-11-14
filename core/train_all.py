@@ -29,6 +29,46 @@ def oracle_auc(w: dict) -> float:
     return round(float(roc_auc_score(te["label"], te["f_ontime"])), 4)
 
 
+SWEEP_MULTS = (1.0, 1.3, 1.6, 2.0, 2.5)
+SWEEP_SEEDS = (42, 43, 44)
+
+
+def bias_sweep() -> dict:
+    """Sensitivity analysis: how much bias does each model copy as the group proxy (basket size) gets stronger?
+    Every level and seed is reported; nothing is picked."""
+    import tempfile
+    from pathlib import Path
+
+    import numpy as np
+
+    from core import bias_experiment
+    from data.generate import make_training_world
+    tmp = Path(tempfile.mkdtemp())
+    runs = []
+    for mult in SWEEP_MULTS:
+        for seed in SWEEP_SEEDS:
+            p = tmp / f"w_{mult}_{seed}.db"
+            make_training_world(seed=seed, path=p, overrides={"ingroup_ticket_mult": mult}, quiet=True)
+            r = bias_experiment.run(world.load_world(str(p)))
+            world.load_world.cache_clear()
+            p.unlink()
+            runs.append({"ticket_mult": mult, "seed": seed,
+                         "proxy_smd": r["proxy_check"]["std_mean_diff_A_minus_B"]["median_ticket_paise"],
+                         "gap_shopkeeper": r["shopkeeper"]["gap_A_minus_B"], "gap_a": r["model_a"]["gap_A_minus_B"],
+                         "gap_b": r["model_b"]["gap_A_minus_B"], "auc_a": r["repayment_auc"]["model_a"],
+                         "auc_b": r["repayment_auc"]["model_b"]})
+    levels = []
+    for mult in SWEEP_MULTS:
+        rs = [r for r in runs if r["ticket_mult"] == mult]
+        levels.append({"ticket_mult": mult, **{k: round(float(np.mean([r[k] for r in rs])), 4)
+                                               for k in ("proxy_smd", "gap_shopkeeper", "gap_a", "gap_b", "auc_a", "auc_b")},
+                       "gap_a_min": min(r["gap_a"] for r in rs), "gap_a_max": max(r["gap_a"] for r in rs),
+                       "gap_b_min": min(r["gap_b"] for r in rs), "gap_b_max": max(r["gap_b"] for r in rs)})
+    return {"seeds": list(SWEEP_SEEDS), "default_ticket_mult": config.WORLD["ingroup_ticket_mult"],
+            "levels": levels, "runs": runs,
+            "note": "gap = recommendation rate among truly reliable customers, in-group minus out-group (top 15% per shop)."}
+
+
 def run() -> dict:
     t0 = time.time()
     w = world.load_world()
@@ -52,6 +92,9 @@ def run() -> dict:
         be = bias_experiment.run(w)
         write_report("bias_experiment.json", be)
         print(f"[bias] {be['summary']}")
+        sw = bias_sweep()
+        write_report("bias_sweep.json", sw)
+        print("[bias sweep] " + " | ".join(f"x{lv['ticket_mult']}: A {lv['gap_a']:+.3f} B {lv['gap_b']:+.3f}" for lv in sw["levels"]))
     except ImportError:
         pass
     try:

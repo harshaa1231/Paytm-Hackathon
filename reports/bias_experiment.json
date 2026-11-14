@@ -1,0 +1,98 @@
+{
+ "setup": {
+  "train_shops": 160,
+  "test_shops": 40,
+  "model_a_rows": 12133,
+  "model_b_rows": 3173,
+  "test_customers": 3128,
+  "top_k_share_per_shop": 0.15,
+  "truly_reliable_definition": "true on-time probability >= 0.85",
+  "features": [
+   "n_pay_90d",
+   "active_weeks_share",
+   "gap_std_days",
+   "recency_days",
+   "tenure_days",
+   "median_ticket_paise",
+   "max_gap_days"
+  ]
+ },
+ "shopkeeper": {
+  "A": {
+   "n_reliable": 667,
+   "rec_rate": 0.3253
+  },
+  "B": {
+   "n_reliable": 704,
+   "rec_rate": 0.2131
+  },
+  "gap_A_minus_B": 0.1122,
+  "ratio_A_over_B": 1.527
+ },
+ "model_a": {
+  "A": {
+   "n_reliable": 667,
+   "rec_rate": 0.2609
+  },
+  "B": {
+   "n_reliable": 704,
+   "rec_rate": 0.294
+  },
+  "gap_A_minus_B": -0.0331,
+  "ratio_A_over_B": 0.887,
+  "gap_95ci_bootstrap_by_shop": [
+   -0.0824,
+   0.0097
+  ]
+ },
+ "model_b": {
+  "A": {
+   "n_reliable": 667,
+   "rec_rate": 0.2684
+  },
+  "B": {
+   "n_reliable": 704,
+   "rec_rate": 0.2699
+  },
+  "gap_A_minus_B": -0.0015,
+  "ratio_A_over_B": 0.994,
+  "gap_95ci_bootstrap_by_shop": [
+   -0.0417,
+   0.0376
+  ]
+ },
+ "repayment_auc": {
+  "model_a": 0.7225,
+  "model_b": 0.7055,
+  "oracle_f_r": 0.8229
+ },
+ "precision_of_recommended": {
+  "model_a": 0.8996,
+  "model_b": 0.8803
+ },
+ "proxy_check": {
+  "std_mean_diff_A_minus_B": {
+   "n_pay_90d": -0.013,
+   "active_weeks_share": -0.022,
+   "gap_std_days": 0.03,
+   "recency_days": 0.012,
+   "tenure_days": 0.024,
+   "median_ticket_paise": 0.474,
+   "max_gap_days": 0.031
+  },
+  "ticket_share_of_gain": {
+   "model_a": 0.101,
+   "model_b": 0.136
+  },
+  "note": "Neither model sees the group. In this synthetic world in-group customers buy slightly bigger baskets (a documented generator choice, unrelated to repayment), so basket size is a proxy a model CAN use to copy group bias."
+ },
+ "caption": "Trained on the shopkeeper's choices, the model did NOT show a clear group gap in this run (reliable in-group customers recommended 26% vs 29%). Trained on who actually repays, it doesn't (27% vs 27%), but it predicts repayment worse (AUC 0.71 vs 0.72).",
+ "summary": {
+  "gap_a": -0.0331,
+  "gap_b": -0.0015,
+  "auc_a": 0.7225,
+  "auc_b": 0.7055,
+  "copies_bias": false,
+  "b_fair": true
+ }
+}

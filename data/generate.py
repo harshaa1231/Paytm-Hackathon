@@ -101,7 +101,19 @@ def simulate_credit(rng, *, r: float, start_day: float, stop_start_day: float, t
 
 
 # =============================================================================== training world
-def make_training_world(seed: int = config.SEED, path: Path = config.TRAIN_DB_PATH) -> dict:
+def make_training_world(seed: int = config.SEED, path: Path = config.TRAIN_DB_PATH, overrides: dict | None = None,
+                        quiet: bool = False) -> dict:
+    """overrides: change world parameters (used ONLY by the bias experiment's proxy-strength sweep)."""
+    global W
+    W_saved = W
+    W = {**W_saved, **(overrides or {})}
+    try:
+        return _make_training_world(seed, path, quiet)
+    finally:
+        W = W_saved
+
+
+def _make_training_world(seed: int, path: Path, quiet: bool) -> dict:
     t0 = time.time()
     rng = np.random.default_rng(seed)
     start = parse(W["world_start"])
@@ -177,7 +189,8 @@ def make_training_world(seed: int = config.SEED, path: Path = config.TRAIN_DB_PA
     stats = {"customers": len(cust_rows), "payments": len(pay_rows), "credit_episodes": len(credit_rows),
              "credit_customer_share": round(float(np.mean([c[5] for c in cust_rows])), 3),
              "seconds": round(time.time() - t0, 1)}
-    print(f"[world] {stats}")
+    if not quiet:
+        print(f"[world] {stats}")
     return stats
 
 

@@ -146,13 +146,22 @@ def find_candidates(conn: sqlite3.Connection, shop_id: str, payment: dict, *, us
         result.update(stage="no_match", customer_id=None, confidence=0.0,
                       reason=f"best name score {top['score']:.0f} < {config.MATCH_MIN_SCORE}: treat as a purchase")
         return result
-    if top["score"] >= config.MATCH_CONFIDENT_SCORE and top["score"] - second >= config.MATCH_MARGIN:
+
+    def exact(c):
+        return amount in c["open_amounts"] or amount == sum(c["open_amounts"])
+    # conflicting evidence guard: the name points to one customer, but the amount is exactly ANOTHER customer's
+    # open udhaar (typical when a family member with a different name pays). Don't auto-propose; ask.
+    amount_rivals = [c for c in cands[1:] if exact(c)] if not exact(top) else []
+    if top["score"] >= config.MATCH_CONFIDENT_SCORE and top["score"] - second >= config.MATCH_MARGIN and not amount_rivals:
         result.update(stage="fuzzy_confident", customer_id=top["customer_id"], confidence=min(0.95, top["score"] / 105),
                       reason=f"name score {top['score']:.0f}, next best {second:.0f}")
         return result
 
-    # 5) ambiguous -> LLM (only the plausible candidates)
-    plausible = [c for c in cands if c["score"] >= config.MATCH_MIN_SCORE][:config.MAX_LLM_CANDIDATES]
+    # 5) ambiguous -> LLM (only the plausible candidates, plus any exact-amount rivals)
+    plausible = [c for c in cands if c["score"] >= config.MATCH_MIN_SCORE]
+    plausible = (plausible + [c for c in amount_rivals if c not in plausible])[:config.MAX_LLM_CANDIDATES]
+    if amount_rivals:
+        result["conflict"] = "name and amount point to different customers"
     result["candidates"] = plausible
     if not use_llm:
         result.update(stage="ambiguous", customer_id=None, confidence=0.0, reason="ambiguous; LLM not used")
