@@ -1,4 +1,4 @@
-"""Service layer: the SAME functions back the FastAPI endpoints and the Streamlit screen.
+"""Service layer: the SAME functions back every FastAPI endpoint, so the web app shows exactly what the API returns.
 
 "The app screen and the API return exactly the same cards, so Paytm's app team would only render this JSON."
 """

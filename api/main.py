@@ -222,8 +222,8 @@ def _report(name: str) -> dict | None:
 
 @app.get("/v1/demo/config", dependencies=[Depends(demo_only)])
 def demo_config(conn=Depends(conn_dep)):
-    shops = [dict(r) for r in conn.execute("SELECT id, name, shop_type FROM shops WHERE id IN (%s) ORDER BY id"
-                                           % ",".join("?" * len(config.ENABLED_MERCHANTS)), sorted(config.ENABLED_MERCHANTS))]
+    shops = [dict(r) for r in conn.execute("SELECT id, name, shop_type FROM shops ORDER BY id")
+             if r["id"] in config.ENABLED_MERCHANTS]
     return {"shops": shops, "demo_mode": config.DEMO_MODE, "warnings": config.STARTUP_WARNINGS,
             "shop_keys": {s["id"]: config.SHOP_KEYS.get(s["id"]) for s in shops},   # demo only: prod uses merchant login
             "open_admin": config.DEMO_OPEN_ADMIN, "footer": SYNTHETIC_FOOTER, "demo_now": now_iso(),

@@ -30,7 +30,7 @@ SYSTEM_PROMPT = (
 
 _lock = threading.Lock()
 _cache: dict | None = None
-_memo: dict[str, str] = {}          # in-process memo so Streamlit reruns don't re-call the API
+_memo: dict[str, str] = {}          # in-process memo so repeated card renders don't re-call the API
 _gemini_model_id: str | None = None
 _last_calls: list[dict] = []        # recent call metadata, for "Under the hood"
 

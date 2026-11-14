@@ -66,11 +66,13 @@ def main(names: list[str] | None = None) -> None:
         zpath = out_dir / Path(d["url"]).name.replace("+", "_")
         if not zpath.exists():
             print(f"downloading {name} ...")
+            if not d["url"].startswith("https://archive.ics.uci.edu/"):
+                raise ValueError("only the hard-coded https UCI URLs are allowed")
             req = urllib.request.Request(d["url"], headers={"User-Agent": "pakkakhata-validation/1.0"})
             import certifi   # python.org builds on macOS ship without CA certs; verify with certifi's bundle
             ctx = ssl.create_default_context(cafile=certifi.where())
-            with urllib.request.urlopen(req, timeout=300, context=ctx) as r, zpath.open("wb") as f:
-                f.write(r.read())
+            with urllib.request.urlopen(req, timeout=300, context=ctx) as r:  # nosec B310
+                zpath.write_bytes(r.read())
         with zipfile.ZipFile(zpath) as z:
             members = [i for i in z.infolist() if not i.is_dir() and ".." not in i.filename and not i.filename.startswith("/")]
             for i in members:   # safe extraction: plain names only, into this dataset's own folder

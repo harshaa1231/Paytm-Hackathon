@@ -1,4 +1,4 @@
-"""Cards: the ONE function both the Streamlit app and the API use (plan 12c).
+"""Cards: the ONE function both the web app (via the API) and the integration API use (plan 12c).
 
 Public card JSON: {card_id, type: who_paid|who_to_trust|coming_back, title, body, amount_paise, actions:[...], ...}
 Internal extras (judge verdicts, match details) stay in the DB / "Under the hood", not in the API payload.
