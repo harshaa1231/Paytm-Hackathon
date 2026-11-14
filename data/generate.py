@@ -42,8 +42,10 @@ W = config.WORLD
 
 
 def f_ontime(r: np.ndarray | float):
-    """Probability of repaying within 14 days, from latent reliability r. No group term."""
-    return np.clip(np.power(r, 0.7), 0.02, 0.98)
+    """Probability of repaying within 14 days, from latent reliability r. No group term.
+    ASSUMPTION of the synthetic world: a logistic curve (r=0.5 -> 50%, r=0.8 -> ~92%). How strongly behaviour
+    predicts repayment in reality is unknown until a pilot; reports show the oracle AUC ceiling next to ours."""
+    return np.clip(1 / (1 + np.exp(-8.0 * (np.asarray(r) - 0.5))), 0.02, 0.98)
 
 
 def _sigmoid(x):
@@ -315,12 +317,13 @@ def make_demo_db(path: Path = config.DB_PATH, seed: int = config.SEED) -> dict:
         khata = N.khata_name(rng, first, sur)
         upi = N.upi_name(rng, first, sur) or f"{first.upper()} {sur[0]}"
         v = N.vpa(rng, first)
-        r = float(rng.beta(4, 2))
+        # credit customers are the ones the shopkeeper chose (top ~18% perceived reliability), as in the world
+        r = float(0.65 + 0.33 * rng.beta(2, 2))
         cid = cust(khata, f"S001-C{100 + k:03d}")
         qr = rng.random() < 0.7
         b.credit_history(cid, khata, v, upi, r=r, n_eps=int(rng.integers(2, 6)), qr_repay=qr)
         b.purchases(v, upi, b.random_days(0.05 + 0.12 * r, float(rng.uniform(60, 175))))
-        age = float(rng.uniform(1, 24))
+        age = float(min(25.0, 0.5 + rng.exponential(5.0)))     # open udhaar ages like the world's (median ~5 days)
         ledger.add_udhaar(conn, S, cid, int(amounts[k]), given_at=_ts(age, float(rng.uniform(9, 20))))
         others.append({"customer_id": cid, "khata_name": khata, "open_paise": int(amounts[k]), "age_days": round(age, 1)})
 

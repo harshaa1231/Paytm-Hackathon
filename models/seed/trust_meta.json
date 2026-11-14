@@ -1,0 +1,21 @@
+{
+ "threshold": 0.9465854016028966,
+ "features": [
+  "n_pay_90d",
+  "active_weeks_share",
+  "gap_std_days",
+  "recency_days",
+  "tenure_days",
+  "median_ticket_paise",
+  "max_gap_days",
+  "prior_ontime_rate"
+ ],
+ "batches": [
+  1
+ ],
+ "metrics": {
+  "roc_auc": 0.6908,
+  "brier": 0.1562,
+  "train_rows": 2003
+ }
+}

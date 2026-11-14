@@ -33,8 +33,9 @@ CREATE TABLE IF NOT EXISTS match_examples(
   id INTEGER PRIMARY KEY AUTOINCREMENT, shop_id TEXT NOT NULL, payer_name TEXT, khata_name TEXT,
   label TEXT NOT NULL CHECK(label IN ('match','not_match')), created_at TEXT);
 CREATE TABLE IF NOT EXISTS credit_offers(
-  id INTEGER PRIMARY KEY AUTOINCREMENT, shop_id TEXT NOT NULL, customer_id TEXT NOT NULL,
-  amount_paise INTEGER NOT NULL, step INTEGER NOT NULL, offered_at TEXT, decision TEXT, decided_at TEXT);
+  id INTEGER PRIMARY KEY AUTOINCREMENT, shop_id TEXT NOT NULL, customer_id TEXT, payer_vpa TEXT,
+  amount_paise INTEGER NOT NULL, step INTEGER NOT NULL, offered_at TEXT, decision TEXT, decided_at TEXT,
+  score REAL);
 CREATE TABLE IF NOT EXISTS outcomes(
   udhaar_id TEXT PRIMARY KEY, repaid_on_time INTEGER NOT NULL, days_to_repay REAL,
   observed_at TEXT, voided INTEGER NOT NULL DEFAULT 0);

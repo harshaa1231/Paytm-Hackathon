@@ -1,0 +1,15 @@
+{
+ "label": "open udhaar repaid within the next 7 days",
+ "train_rows": 5881,
+ "test_rows": 1460,
+ "test_prevalence": 0.558,
+ "roc_auc": 0.7789,
+ "brier": 0.1828,
+ "backtest_shop_weeks": 612,
+ "backtest_coverage_80": 0.964,
+ "backtest_coverage_80_without_shared_shock": 0.946,
+ "backtest_mean_abs_error_rupees": 536.0,
+ "backtest_mean_open_total_rupees": 2336.0,
+ "mc_draws": 2000,
+ "mc_shared_shock_sd_logit": 0.5
+}
