@@ -110,7 +110,7 @@ export default function Proof() {
 
           {sw && (
             <div className="pt-2 border-t border-slate-100">
-              <h3 className="font-semibold text-[16px] mt-3">How much bias gets copied depends on how strongly behaviour hints at the group</h3>
+              <h3 className="font-semibold text-[16px] mt-3">In-group gap vs group-signal strength</h3>
               <p className="text-[13px] text-ink-2 mt-1 max-w-3xl">Neither model sees the group. A model trained on the shopkeeper's yes/no can only copy his bias through a proxy. Here that's basket
                 size, which in-group customers have slightly bigger (a documented generator choice, unrelated to repayment). We swept the proxy's strength and averaged {sw.seeds.length} seeds.
                 Every level is shown.</p>
@@ -119,19 +119,19 @@ export default function Proof() {
                   <LineChart data={sweepData} margin={{ top: 10, right: 16, left: 0, bottom: 18 }}>
                     <CartesianGrid stroke={GRID} vertical={false} />
                     <XAxis dataKey="proxy" type="number" domain={["dataMin", "dataMax"]} {...axis} tickFormatter={(v) => v.toFixed(1)}
-                      label={{ value: "Proxy strength (standardized basket-size difference between groups)", position: "bottom", offset: 2, fill: AX, fontSize: 12 }} />
+                      label={{ value: "Group-signal strength in buying behaviour (standardized basket-size difference between groups)", position: "bottom", offset: 2, fill: AX, fontSize: 12 }} />
                     <YAxis {...axis} tickFormatter={(v) => signedPct(v, 0)} />
                     <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="4 3" />
                     {defaultProxy != null && <ReferenceLine x={defaultProxy} stroke="#94a3b8" label={{ value: "app's world", fill: AX, fontSize: 11, position: "insideTopRight" }} />}
-                    <Tooltip contentStyle={tipStyle} labelFormatter={(v) => `Proxy strength ${Number(v).toFixed(2)}`} formatter={(v: number, n: string) => [signedPct(v), n]} />
+                    <Tooltip contentStyle={tipStyle} labelFormatter={(v) => `Group-signal strength ${Number(v).toFixed(2)}`} formatter={(v: number, n: string) => [signedPct(v), n]} />
                     <Legend verticalAlign="top" align="left" iconType="circle" wrapperStyle={{ fontSize: 13, paddingBottom: 8 }} />
-                    <Line isAnimationActive={false} dataKey="a" name="Model A: learns his yes/no" stroke={C2} strokeWidth={2} dot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: C2 }} />
-                    <Line isAnimationActive={false} dataKey="b" name="Model B: learns repayments" stroke={C1} strokeWidth={2} dot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: C1 }} />
-                    <Line isAnimationActive={false} dataKey="s" name="Shopkeeper's own choices" stroke={C3} strokeWidth={2} dot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: C3 }} />
+                    <Line isAnimationActive={false} dataKey="a" name="Model trained on shopkeeper decisions" stroke={C2} strokeWidth={2} dot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: C2 }} />
+                    <Line isAnimationActive={false} dataKey="b" name="Model trained on repayments" stroke={C1} strokeWidth={2} dot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: C1 }} />
+                    <Line isAnimationActive={false} dataKey="s" name="Shopkeeper decisions" stroke={C3} strokeWidth={2} dot={{ r: 4, strokeWidth: 2, stroke: "#fff", fill: C3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-[12.5px] text-ink-3">y = in-group minus out-group recommendation rate among truly reliable customers. The real-world proxy strength is unknown: a pilot measures it.</p>
+              <p className="text-[12.5px] text-ink-3">y = in-group minus out-group recommendation rate among truly reliable customers, averaged over {sw.seeds.length} seeds. The vertical line is the app's default world (unchanged). The real-world signal strength is unknown: a pilot measures it.</p>
             </div>
           )}
         </Block>
