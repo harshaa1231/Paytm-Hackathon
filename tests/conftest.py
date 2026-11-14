@@ -7,8 +7,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+import tempfile  # noqa: E402
+
 os.environ["DEMO_MODE"] = "replay"          # tests never touch the network
 os.environ["PAKKA_FAKE_NOW"] = "2026-11-14T09:30:00+05:30"
+os.environ["PAKKA_DB"] = str(Path(tempfile.mkdtemp()) / "events_sink.db")   # never write to the real demo DB
 
 from core import db, ledger  # noqa: E402
 

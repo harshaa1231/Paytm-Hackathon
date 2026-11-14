@@ -1,0 +1,18 @@
+{
+  "_note": "UNREVIEWED machine drafts for a native speaker to check at the venue. The app NEVER loads this file. After review, copy the corrected strings into app/i18n.json under 'hi'/'te' and list the keys in '_reviewed'.",
+  "hi": {
+    "btn_purchase": "सिर्फ़ खरीदारी",
+    "btn_not_him": "यह ग्राहक नहीं",
+    "btn_clear": "{amount} उधार चुकता करें",
+    "btn_no": "नहीं",
+    "btn_yes_offer": "हाँ, {amount} उधार दें",
+    "cb_title": "अगले 7 दिनों में वापस आने वाला पैसा",
+    "owed_total": "आपका कुल बकाया उधार"
+  },
+  "te": {
+    "btn_purchase": "కేవలం కొనుగోలు",
+    "btn_not_him": "ఈ కస్టమర్ కాదు",
+    "btn_no": "వద్దు",
+    "cb_title": "వచ్చే 7 రోజుల్లో తిరిగి వచ్చే డబ్బు"
+  }
+}
