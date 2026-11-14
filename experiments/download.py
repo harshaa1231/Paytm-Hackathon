@@ -33,6 +33,20 @@ DATASETS = {
         "licence": "CC BY 4.0 (verified on the UCI dataset page, 2026-11-14)",
         "citation": "Yeh, I. (2009). Default of Credit Card Clients [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C55S3H",
     },
+    # AI4Bharat Aksharantar (IIT Madras): Latin <-> native-script word pairs. Licence per the dataset card (2026-11-14):
+    # manually collected data CC-BY; mined (Samanantar, IndicCorp) and existing sources CC0. Cite arXiv 2205.03018.
+    "aksharantar_hin": {
+        "url": "https://huggingface.co/datasets/ai4bharat/Aksharantar/resolve/main/hin.zip",
+        "page": "https://huggingface.co/datasets/ai4bharat/Aksharantar",
+        "licence": "Mixed per row source (dataset card): manually collected data CC-BY; mined and existing sources CC0",
+        "citation": "Madhani et al. (2022), Aksharantar, arXiv:2205.03018 (AI4Bharat)",
+    },
+    "aksharantar_tel": {
+        "url": "https://huggingface.co/datasets/ai4bharat/Aksharantar/resolve/main/tel.zip",
+        "page": "https://huggingface.co/datasets/ai4bharat/Aksharantar",
+        "licence": "Mixed per row source (dataset card): manually collected data CC-BY; mined and existing sources CC0",
+        "citation": "Madhani et al. (2022), Aksharantar, arXiv:2205.03018 (AI4Bharat)",
+    },
 }
 
 
@@ -66,8 +80,8 @@ def main(names: list[str] | None = None) -> None:
         zpath = out_dir / Path(d["url"]).name.replace("+", "_")
         if not zpath.exists():
             print(f"downloading {name} ...")
-            if not d["url"].startswith("https://archive.ics.uci.edu/"):
-                raise ValueError("only the hard-coded https UCI URLs are allowed")
+            if not d["url"].startswith(("https://archive.ics.uci.edu/", "https://huggingface.co/datasets/ai4bharat/Aksharantar/")):
+                raise ValueError("only the hard-coded https dataset URLs are allowed")
             req = urllib.request.Request(d["url"], headers={"User-Agent": "pakkakhata-validation/1.0"})
             import certifi   # python.org builds on macOS ship without CA certs; verify with certifi's bundle
             ctx = ssl.create_default_context(cafile=certifi.where())

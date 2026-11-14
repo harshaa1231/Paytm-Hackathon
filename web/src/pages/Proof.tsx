@@ -61,7 +61,10 @@ export default function Proof() {
             ["Names", r.matcher_metrics?.part_a_labelled_pairs ? <>Tested on {r.matcher_metrics.part_a_labelled_pairs.n_pairs} hand-written Indian name pairs
               (transliteration, v↔b, initials, reordering, honorifics, descriptors, blank names, hard negatives): precision at auto-match{" "}
               {pct(r.matcher_metrics.part_a_labelled_pairs.precision_at_auto_match, 1)}, false-match rate {pct(r.matcher_metrics.part_a_labelled_pairs.false_match_rate, 1)}.
-              Different people with near-identical names in one shop never auto-matched. Variation types from IDinsight's work on Hindi name matching.</> : <>Run experiments/matcher_eval.py.</>],
+              Different people with near-identical names in one shop never auto-matched. Variation types from IDinsight's work on Hindi name matching.
+              {r.aksharantar?.languages && <> Spelling variation on real AI4Bharat Aksharantar words (words, not names): two spellings of the same word
+                auto-matched {pct(r.aksharantar.languages.hin.same_word_variants.auto_match)} (Hindi) / {pct(r.aksharantar.languages.tel.same_word_variants.auto_match)} (Telugu),
+                and different look-alike words auto-matched {pct(r.aksharantar.languages.hin.different_lookalike_words.auto_match, 1)} / {pct(r.aksharantar.languages.tel.different_lookalike_words.auto_match, 1)}.</>}</> : <>Run experiments/matcher_eval.py.</>],
           ].map(([h, body], i) => (
             <li key={i} className="rounded-xl bg-slate-50 px-4 py-3"><div className="h-eyebrow mb-1">{h as string}</div><div className="text-[14px] text-ink-2 leading-relaxed">{body}</div></li>
           ))}

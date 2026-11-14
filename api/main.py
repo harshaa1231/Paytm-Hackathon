@@ -375,7 +375,7 @@ def demo_reports():
     return {"trust": _report("metrics.json"), "forecast": _report("forecast_metrics.json"), "bias": _report("bias_experiment.json"),
             "sweep": _report("bias_sweep.json"), "matcher_replay": _report("learning_matcher.json"),
             "learning_state": learning.load_state(), "real_retail": _report("real_retail_metrics.json"),
-            "fairness_external": _report("fairness_external.json"), "matcher_metrics": _report("matcher_metrics.json"),
+            "fairness_external": _report("fairness_external.json"), "matcher_metrics": _report("matcher_metrics.json"), "aksharantar": _report("aksharantar_metrics.json"),
             "facts": FACTS, "trust_target_precision": config.TRUST_TARGET_PRECISION}
 
 

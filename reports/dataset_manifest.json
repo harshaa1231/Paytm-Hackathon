@@ -49,5 +49,55 @@
    "Taiwan credit cards, 2005: not kirana udhaar.",
    "No shopkeeper decisions: checks the audit, not Model A vs B."
   ]
+ },
+ "aksharantar_hin": {
+  "source_url": "https://huggingface.co/datasets/ai4bharat/Aksharantar/resolve/main/hin.zip",
+  "page": "https://huggingface.co/datasets/ai4bharat/Aksharantar",
+  "access_date": "2026-11-14",
+  "licence_seen": "Mixed per row source (dataset card): manually collected data CC-BY; mined and existing sources CC0",
+  "citation": "Madhani et al. (2022), Aksharantar, arXiv:2205.03018 (AI4Bharat)",
+  "files": {
+   "hin.zip": {
+    "sha256": "208c2d1b128234e6dc777b750779b4f5e6214ab43244039349b530bf9868bdaf",
+    "bytes": 33100386
+   },
+   "hin_test.json": {
+    "sha256": "12eb3497f09391a31cd5b3457ec12089ae2a6e1b60c92d450b74fa810b03d269",
+    "bytes": 1229890
+   },
+   "hin_train.json": {
+    "sha256": "888a7b5c8a9f7815d227c0ccf9eb52e45b892298f1b7f1fc81f9d654467561d6",
+    "bytes": 195791935
+   },
+   "hin_valid.json": {
+    "sha256": "e4649aa371337a2dd60c94e6c5f61ac7442a0bcaac017e61f0b6de745d8c2278",
+    "bytes": 890674
+   }
+  }
+ },
+ "aksharantar_tel": {
+  "source_url": "https://huggingface.co/datasets/ai4bharat/Aksharantar/resolve/main/tel.zip",
+  "page": "https://huggingface.co/datasets/ai4bharat/Aksharantar",
+  "access_date": "2026-11-14",
+  "licence_seen": "Mixed per row source (dataset card): manually collected data CC-BY; mined and existing sources CC0",
+  "citation": "Madhani et al. (2022), Aksharantar, arXiv:2205.03018 (AI4Bharat)",
+  "files": {
+   "tel.zip": {
+    "sha256": "08f1c2841f4d02fcc2a56362f7760ec16fc52d8a199029c68d44024ab0d22c1a",
+    "bytes": 72402915
+   },
+   "tel_test.json": {
+    "sha256": "e342fc7056d745a483c962a44e8848e713eec7c29271c8d7d0cb725cf0ccdea6",
+    "bytes": 1307853
+   },
+   "tel_train.json": {
+    "sha256": "eb77e61d9bc2b3fc4ed1f94d5b56f0fdf0f13c916ea7bb66b1c810f5f00e55f8",
+    "bytes": 400181211
+   },
+   "tel_valid.json": {
+    "sha256": "7499bcb041cca2dc3aa1796fb3757fa8a5a98484f4de63acff7a7ec2462b0d22",
+    "bytes": 1137594
+   }
+  }
  }
 }

@@ -1,0 +1,176 @@
+{
+ "dataset": "AI4Bharat Aksharantar (Hindi, Telugu train splits)",
+ "licence": "Dataset card: manually collected data CC-BY; mined and existing sources CC0. Cite arXiv:2205.03018.",
+ "auto_match_threshold": "name score >= 90",
+ "limitation": "General words, not personal names; no name labels. Checks spelling-variation handling only.",
+ "languages": {
+  "hin": {
+   "same_word_variants": {
+    "n": 3000,
+    "identical_after_folding": 0.2857,
+    "auto_match": 0.6263,
+    "ambiguous_to_llm_or_shopkeeper": 0.355,
+    "no_match": 0.0187
+   },
+   "different_lookalike_words": {
+    "n": 3000,
+    "identical_after_folding": 0.0033,
+    "auto_match": 0.0467,
+    "ambiguous_to_llm_or_shopkeeper": 0.729,
+    "no_match": 0.2243
+   },
+   "examples_same": [
+    [
+     "gadhakaa",
+     "gadhka"
+    ],
+    [
+     "slog",
+     "slogg"
+    ],
+    [
+     "pallevada",
+     "pallewad"
+    ],
+    [
+     "heeraben",
+     "hiraben"
+    ],
+    [
+     "alpaau",
+     "alpaayu"
+    ],
+    [
+     "raambuka",
+     "raambukaa"
+    ],
+    [
+     "bhicner",
+     "bhikner"
+    ],
+    [
+     "haemorrhaging",
+     "hamorrhaging"
+    ]
+   ],
+   "examples_diff": [
+    [
+     "rtlm",
+     "rtls"
+    ],
+    [
+     "ladifingers",
+     "ladhpur"
+    ],
+    [
+     "dirawati",
+     "directly"
+    ],
+    [
+     "prvati",
+     "prval"
+    ],
+    [
+     "hist",
+     "histopathology"
+    ],
+    [
+     "immunotherapetics",
+     "imman"
+    ],
+    [
+     "tiff",
+     "tiffen"
+    ],
+    [
+     "sajjanraj",
+     "sajdeh"
+    ]
+   ]
+  },
+  "tel": {
+   "same_word_variants": {
+    "n": 3000,
+    "identical_after_folding": 0.337,
+    "auto_match": 0.6837,
+    "ambiguous_to_llm_or_shopkeeper": 0.3027,
+    "no_match": 0.0137
+   },
+   "different_lookalike_words": {
+    "n": 3000,
+    "identical_after_folding": 0.0037,
+    "auto_match": 0.0567,
+    "ambiguous_to_llm_or_shopkeeper": 0.5947,
+    "no_match": 0.3487
+   },
+   "examples_same": [
+    [
+     "goothiloo",
+     "gothilo"
+    ],
+    [
+     "kalvari",
+     "kalwari"
+    ],
+    [
+     "yahweh",
+     "yave"
+    ],
+    [
+     "sabdaalu",
+     "shabdaalu"
+    ],
+    [
+     "vaini",
+     "waini"
+    ],
+    [
+     "vindhulo",
+     "vindulo"
+    ],
+    [
+     "donthi",
+     "donti"
+    ],
+    [
+     "atyadhikulu",
+     "atydhikulu"
+    ]
+   ],
+   "examples_diff": [
+    [
+     "almati",
+     "almarane"
+    ],
+    [
+     "astinasti",
+     "astraalai"
+    ],
+    [
+     "gujri",
+     "gujjarlane"
+    ],
+    [
+     "gegarin",
+     "gegong"
+    ],
+    [
+     "onagoorindani",
+     "onarpan"
+    ],
+    [
+     "ilvaluni",
+     "ilvala"
+    ],
+    [
+     "cuisine",
+     "cuist"
+    ],
+    [
+     "uaakubhai",
+     "uaaaeeeuuueee"
+    ]
+   ]
+  }
+ }
+}
