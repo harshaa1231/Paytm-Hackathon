@@ -15,6 +15,9 @@ Built for the Paytm Build for India AI Hackathon (Track 1, Merchant Growth AI).
 **All data is synthetic**, shaped on the published findings of Sungu, Alhorr & Srivastava (2026), a field experiment in
 26 Mumbai grocery stores. No real customers, no real Paytm integration, no money moves.
 
+** Live-On: https://pakkakhata.onrender.com/ **
+** Demo Link: https://drive.google.com/file/d/1EYUQPwhATeevrRziQpkeFrULAhqvdT9E/view?usp=drive_link **
+
 ---
 
 ## Evidence (India first)
