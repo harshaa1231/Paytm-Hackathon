@@ -16,6 +16,7 @@ Built for the Paytm Build for India AI Hackathon (Track 1, Merchant Growth AI).
 26 Mumbai grocery stores. No real customers, no real Paytm integration, no money moves.
 
 ** Live-On: https://pakkakhata.onrender.com/ **
+
 ** Demo Link: https://drive.google.com/file/d/1EYUQPwhATeevrRziQpkeFrULAhqvdT9E/view?usp=drive_link **
 
 ---
